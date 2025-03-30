@@ -99,20 +99,36 @@ Market Maven interacts with **Alpaca**'s API to retrieve users' trading activity
 
 ---
 
-## Backend Structural Model
+## Backend Class Diagrams
 
-### Backend Class Diagrams
+#### Post
+##### Data Members
+- **ticker:** String  
+- **author:** User object  
+- **order_type:** String  
+- **context:** String  
+- **percent_gain:** Integer  
 
-#### **Post Class**
-```plaintext
-Post
-- ticker: String
-- author: User object
-- order_type: String
-- context: String
-- percent_gain: Integer
+##### Methods
+- `CreatePost(ticker, order_type, context, percent_gain, author) -> Post Object`  
+- `UpdatePost(Post Object, new_content) -> Post Object`  
+- `ViewPost(Post Object) -> Post Object`  
 
-Methods:
-- CreatePost(ticker, order_type, context, percent_gain, author) -> Post Object
-- UpdatePost(Post Object, new_content) -> Post Object
-- ViewPost(Post Object) -> Post Object
+---
+
+#### User
+##### Data Members
+- **username:** String  
+- **gmail:** String  
+- **password:** String  
+
+---
+
+#### Profile
+##### Data Members
+- **user:** User object  
+- **image:** jpg  
+- **capital_gain_YTD:** Integer  
+- **rank:** String  
+- **posts:** Array[Post object]  
+
