@@ -3,8 +3,11 @@
 
 ---
 
-## Development Strategy - Plan Driven
-I will create and review the **System Requirements Specification (SRS)**. Once the SRS document is completed, I will repeat the process for the **System Architecture Specification (SAS)** document. Lastly, will come the implementation. I will validate the software at each small feature implementation so that a long validation phase is not needed. I also plan for more features to be added so if youre interested in helping out youre welcome to read the contribuiters guide and get started with developing a new feature or testing.
+## Design 
+(SEE SRS DOCUMENT)
+
+## User Guide
+1. No Code yet!
 
 ---
 
