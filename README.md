@@ -25,7 +25,7 @@ Django's ease of use for backend development and its integration capabilities wi
 ---
 
 ## Context Model
-![Context Model](contextmodel.png)
+![Context Model](contextmodel.jpg)
 
 
 ### System Boundaries
@@ -36,10 +36,8 @@ Market Maven interacts with **Alpaca**'s API to retrieve users' trading activity
 
 ## Use Case Diagram
 
-### Actors:
-- **User**: Interacts with various components such as viewing posts, creating posts, updating their profile, etc.
-- **Alpaca API**: Provides trading data that is consumed by Market Maven.
-- **NLP ML Model**: Analyzes sentiment based on posts to determine market sentiment.
+![Context Model](use_case_1.jpg)
+![Context Model](use_case_2.jpg)
 
 ### Use Cases:
 
