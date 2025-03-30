@@ -25,7 +25,7 @@ Django's ease of use for backend development and its integration capabilities wi
 ---
 
 ## Context Model
-![Context Model](images/system_model_design.png)
+![Context Model](contextmodel.png)
 
 
 ### System Boundaries
