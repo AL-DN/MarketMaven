@@ -1,8 +1,12 @@
 # Market Maven 
-## Market Maven is an innovative application designed for retail traders to share and post their trading activities. The platform will facilitate a discourse community where users can exchange trading philosophies and strategies. Real-time, verifiable user stats on their profiles will add credibility to their statements and insights.
+**Market Maven** is an innovative application designed for retail traders to share and post their trading activities. The platform will facilitate a discourse community where users can exchange trading philosophies and strategies. Real-time, verifiable user stats on their profiles will add credibility to their statements and insights.
+
+---
 
 ## Development Strategy - Plan Driven
 I will create and review the **System Requirements Specification (SRS)**. Once the SRS document is completed, I will repeat the process for the **System Architecture Specification (SAS)** document. Lastly, will come the implementation. I will validate the software at each small feature implementation so that a long validation phase is not needed. I also plan for more features to be added so if youre interested in helping out youre welcome to read the contribuiters guide and get started with developing a new feature or testing.
+
+---
 
 ## Contributing
 
