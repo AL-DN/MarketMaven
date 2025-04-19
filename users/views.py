@@ -4,7 +4,7 @@ from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 import requests
 from .models import Profile
-from users.utils import code_for_token
+from users.utils import code_for_token, get_orders, getToken
 from .forms import UserRegisterForm, UserUpdateForm, ProfileUpdateForm
 from django.conf import settings
 import random
@@ -57,11 +57,12 @@ def profile(request):
 
 
 # Creates URL for OAuth consent screen
+@login_required
 def redirect_to_alpaca(request):
     client_id = settings.ALPACA_ID  # Ensure this matches your Alpaca settings
-    redirect_uri = "http://127.0.0.1:8000/callback/" # Ensure this matches the one registered with Alpaca
+    redirect_uri = "http://127.0.0.1:8000/callback/" # must match one registered / where it redirects once consent is completed
     state = ''.join(random.choices(string.ascii_letters + string.digits, k=16))  # CSRF protection
-    scope = "account:write"
+    scope = "account:write trading"
     env="paper"
 
     if not client_id:
@@ -78,26 +79,30 @@ def redirect_to_alpaca(request):
 
     return redirect(oauth_url)
 
-# extracts authorization code from url and returns token
+# Once consent is accepte it will return to this view that will:
+# Extract the code and save it to backend
+@login_required
 def oauth_callback(request):
     auth_code = request.GET.get("code")
         
     if not auth_code:
         return HttpResponse("Authorization code was not returned!")
 
+    # does exhange 
+    token_data = code_for_token(auth_code)
+
     # saves info in profile model
-    profile = Profile.objects.get(user=request.user)
-    profile.token = code_for_token(auth_code)
-    profile.save()  
-
-    return redirect("profile")
-
-@login_required
-def get_orders(request):
-    try:
-        profile = request.user.profile
-        access_token = profile.token 
-    except:
-        return HttpResponse("No Alpaca token found.", status=400)
-
- 
+    if token_data != None:
+        profile = Profile.objects.get(user=request.user)
+        profile.token_data = token_data
+        profile.save()  
+        
+        # testing get_orders
+        orders = get_orders(request)
+        print("Orders: ")
+        for order  in orders:
+            print(order)
+    
+        return redirect("profile")
+    else:
+        return HttpResponse("Exhange of Code for Token was unsuccessful")
