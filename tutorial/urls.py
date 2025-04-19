@@ -28,6 +28,7 @@ urlpatterns = [
     path('', include('blog.urls')),
    
     path('redirect-to-alpaca/', user_views.redirect_to_alpaca, name='redirect_to_alpaca'),
+    path('callback/', user_views.oauth_callback, name='alpaca_callback'),
 
     path('register/', user_views.register, name='register'),
     path('profile/', user_views.profile, name='profile'),
