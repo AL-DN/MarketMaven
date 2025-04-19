@@ -145,3 +145,8 @@ EMAIL_USE_TLS = True
 
 EMAIL_HOST_USER = os.environ.get('APP_EMAIL')
 EMAIL_HOST_PASSWORD = os.environ.get('APP_PASSWORD')
+
+BASE_URL = "http://localhost:8000/"
+
+ALPACA_ID = os.environ.get("ALPACA_ID")
+ALPACA_SECRET = os.environ.get("ALPACA_SECRET")
