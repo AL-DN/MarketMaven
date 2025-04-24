@@ -96,12 +96,6 @@ def oauth_callback(request):
         profile = Profile.objects.get(user=request.user)
         profile.token_data = token_data
         profile.save()  
-        
-        # testing get_orders
-        orders = get_orders(request)
-        print("Orders: ")
-        for order  in orders:
-            print(order)
     
         return redirect("profile")
     else:

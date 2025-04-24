@@ -10,7 +10,7 @@ class UserRegisterForm(UserCreationForm):
         model = User
         fields = ['username','email','password1', 'password2']
 
-# used in one view 
+
 class UserUpdateForm(forms.ModelForm):
     email = forms.EmailField()
 
