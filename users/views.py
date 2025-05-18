@@ -4,7 +4,7 @@ from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 import requests
 from .models import Profile
-from users.utils import code_for_token, get_orders, getToken
+from users.utils import code_for_token, get_positions, getToken
 from .forms import UserRegisterForm, UserUpdateForm, ProfileUpdateForm
 from django.conf import settings
 import random
@@ -96,7 +96,16 @@ def oauth_callback(request):
         profile = Profile.objects.get(user=request.user)
         profile.token_data = token_data
         profile.save()  
-    
         return redirect("profile")
     else:
         return HttpResponse("Exhange of Code for Token was unsuccessful")
+
+#@login_required
+##   HttpResponse("BUYS")
+    #HttpResponse("BUYS")
+   # HttpResponse("BUYS")
+  #  HttpResponse("BUYS")
+
+
+    
+    

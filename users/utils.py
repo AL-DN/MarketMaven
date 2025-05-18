@@ -4,7 +4,7 @@ import requests
 import os
 from django.conf import settings
 from .models import Profile
-
+from pprint import pprint
 
 def code_for_token(auth_code):
     token_url = "https://api.alpaca.markets/oauth/token"
@@ -50,17 +50,15 @@ def getToken(user):
     return user.profile.token_data
 
 
-def get_orders(request):
-    
-    # TODO: add check to see if account is connected
-    
+def get_positions(request):
+
     # returns dict with token data from DB
     token_data = getToken(request.user)
     print(f"Token Data: {token_data}")
     
     access_token = token_data.get('alpaca_access_token')
     token_type = token_data.get('alpaca_token_type')
-    url = 'https://paper-api.alpaca.markets/v2/orders' 
+    url = 'https://paper-api.alpaca.markets/v2/positions' 
     
     headers = {
     "Authorization": f"{token_type} {access_token}"
@@ -70,10 +68,16 @@ def get_orders(request):
     response = requests.get(url, headers=headers)
     
     if response.status_code == 200:
-        return response.json()
+        # saves orders to user profile
+        orders = response.json()
+        profile = Profile.objects.get(user=request.user)
+        profile.orders = orders
+        profile.save()  
+        
+        return orders
     else:
         print(f"Failed to fetch orders: {response.status_code} {response.text}")
         return []
-    
 
-    
+
+
