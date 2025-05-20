@@ -2,7 +2,12 @@ from django.shortcuts import render, get_object_or_404
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
 from django.contrib.auth.models import User
+
+from users.utils import filter_positions
 from .models import Post
+
+from django.views.generic import TemplateView
+
 
 class PostListView(ListView):
     model=Post
@@ -72,3 +77,11 @@ def about(request):
     return render(request, 'blog/about.html',context= {'title': 'About'})
 
 
+class NewTradesView(TemplateView):
+    template_name = "blog/new_trades.html"
+
+    def get(self, request, *args, **kwargs):
+        # Either recompute:
+        diff = filter_positions(request)
+        # …or pull from session if you stored it there in login
+        return self.render_to_response(diff)

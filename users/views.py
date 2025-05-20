@@ -88,10 +88,10 @@ def oauth_callback(request):
     if not auth_code:
         return HttpResponse("Authorization code was not returned!")
 
-    # does exhange 
+    # does token exhange 
     token_data = code_for_token(auth_code)
 
-    # saves info in profile model
+    # saves token info in profile model
     if token_data != None:
         profile = Profile.objects.get(user=request.user)
         profile.token_data = token_data
@@ -100,11 +100,6 @@ def oauth_callback(request):
     else:
         return HttpResponse("Exhange of Code for Token was unsuccessful")
 
-#@login_required
-##   HttpResponse("BUYS")
-    #HttpResponse("BUYS")
-   # HttpResponse("BUYS")
-  #  HttpResponse("BUYS")
 
 
     

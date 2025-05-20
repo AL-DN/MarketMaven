@@ -1,0 +1,37 @@
+{% extends "blog/base.html" %}
+{% block content %}
+  <h2>Welcome back, {{ request.user.username }}!</h2>
+
+  {% if buys %}
+    <h3>📈 New Buys</h3>
+    <ul>
+      {% for p in buys %}
+        <li>
+          {{ p.symbol }} (qty: {{ p.qty }})
+          <a href="{% url 'post-create' %}?symbol={{ p.symbol }}&action=buy">
+            Create post
+          </a>
+        </li>
+      {% endfor %}
+    </ul>
+  {% endif %}
+
+  {% if sells %}
+    <h3>📉 New Sells</h3>
+    <ul>
+      {% for p in sells %}
+        <li>
+          {{ p.symbol }} (qty: {{ p.qty }})
+          <a href="{% url 'post-create' %}?symbol={{ p.symbol }}&action=sell">
+            Create post
+          </a>
+        </li>
+      {% endfor %}
+    </ul>
+  {% endif %}
+
+  {% if not buys and not sells %}
+    <p>No new trades since your last login.</p>
+    <p><a href="{% url 'blog-home' %}">Go to your feed</a></p>
+  {% endif %}
+{% endblock %}
