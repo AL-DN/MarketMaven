@@ -1,3 +1,4 @@
+from pprint import pprint
 from django.shortcuts import render, get_object_or_404
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
@@ -7,6 +8,24 @@ from users.utils import filter_positions
 from .models import Post
 
 from django.views.generic import TemplateView
+
+# to overide forms
+from django import forms
+from .models import Post
+
+# overides the form sidget
+class PostForm(forms.ModelForm):
+    class Meta:
+        model = Post
+        fields = ['symbol','type','content']
+        
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args,**kwargs)
+        
+        # sets fields 
+        self.fields['symbol'].disabled = True
+        self.fields['type'].disabled = True
+        
 
 
 class PostListView(ListView):
@@ -33,16 +52,31 @@ class PostDetailView(DetailView):
 
 class PostCreateView(LoginRequiredMixin, CreateView):
     model=Post
-    fields = ['title','content']
-    # context_object_name=object
-    # template_name = post_detail.html
+    form_class = PostForm
+    
+    def get_initial(self):
+        inital = super().get_initial()
+        
+        # gets query parameters passed thru url
+        symbol = self.request.GET.get('symbol')
+        type = self.request.GET.get('type')
 
-    # overrides method so that
-    # for the current form user is trying to submit
-    # make its author the current logged in user
+        if symbol:
+            inital['symbol'] = symbol
+            #print(f"symbol {inital['symbol']}")
+        if type:
+            inital['type'] = type
+            #print(f"type {inital['type']}")
+        #pprint(inital)
+        return inital
+            
+    
     def form_valid(self, form):
+        form.instance.symbol = self.request.GET.get('symbol')
+        form.instance.type = self.request.GET.get('type')
         form.instance.author = self.request.user
         return super().form_valid(form)
+
 
 class PostUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
     model=Post

@@ -8,7 +8,7 @@
       {% for p in buys %}
         <li>
           {{ p.symbol }} (qty: {{ p.qty }})
-          <a href="{% url 'post-create' %}?symbol={{ p.symbol }}&action=buy">
+          <a href="{% url 'post-create' %}?symbol={{ p.symbol }}&type=buy">
             Create post
           </a>
         </li>
@@ -22,7 +22,7 @@
       {% for p in sells %}
         <li>
           {{ p.symbol }} (qty: {{ p.qty }})
-          <a href="{% url 'post-create' %}?symbol={{ p.symbol }}&action=sell">
+          <a href="{% url 'post-create' %}?symbol={{ p.symbol }}&type=sell">
             Create post
           </a>
         </li>
