@@ -7,11 +7,29 @@
       <p class="text-secondary">{{user.email}}</p>
     </div>
   </div>
+
+   <!-- Positions list -->
+  <h3>Current Positions</h3>
+  <ul class="list-group mb-4">
+    {% for position in positions %}
+      <li class="list-group-item">
+        <strong>Symbol:</strong> {{ position.symbol }}<br>
+        <strong>Avg Entry Price:</strong> {{ position.avg_entry_price }}<br>
+        <strong>Quantity:</strong> {{ position.qty }}
+      </li>
+    {% empty %}
+      <li class="list-group-item">No positions to display.</li>
+    {% endfor %}
+  </ul>
+
+
+
   <!-- Updates Image data properly-->
   <form method="POST" enctype="multipart/form-data">
     {% csrf_token %}
     <fieldset class="form-group">
       <legend class="border-bottom mb-4">Join Today</legend>
+      
       <!--RENDER CONECT FORMS BACK2BACK-->
       {{ u_form|crispy }} {{ p_form|crispy }}
     </fieldset>

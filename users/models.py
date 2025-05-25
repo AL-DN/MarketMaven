@@ -9,7 +9,9 @@ class Profile(models.Model):
     image = models.ImageField(default='default.jpg',upload_to='profile_pics')
     token_data = models.JSONField(null=True, blank=True)  # or use TextField/CharField if not JSON
     positions = models.JSONField(default=list, null=True, blank=True)
-
+    ytd_capital_gain = models.DecimalField(default=0.00,max_digits=5, decimal_places=2)
+    
+    
     def __str__(self):
         return f'{self.user.username} Profile'
     
