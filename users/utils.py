@@ -4,7 +4,7 @@ from django.shortcuts import redirect
 import requests
 import os
 from django.conf import settings
-from .models import Profile
+from .models import Profile, Trade
 from pprint import pprint
 
 def code_for_token(auth_code):
@@ -101,23 +101,38 @@ def get_positions(request):
 
 def filter_positions(request):
     
-    # copy of previous positions from last login
-    prev = copy.deepcopy(request.user.profile.positions) or []
-       
-    # gets current positions from Alpaca API
+    # gets (list of Trade objects) trades saved from last login in DB
+    prev = list(request.user.trades.all())    
+
+    # gets *list of dicts) current positions from Alpaca API
     new = get_positions(request)
     
     # extract their tickers
-    prev_syms = {p['symbol'] for p in prev}
+    prev_syms = {p.symbol for p in prev}
     new_syms  = {p['symbol'] for p in new}
 
     # filter into buy and sell lists
     buys  = [p for p in new  if p['symbol'] not in prev_syms]
-    sells = [p for p in prev if p['symbol'] not in new_syms]
+    sells = [p for p in prev if p.symbol not in new_syms]
 
-    # packages buys/sells and ships to blog view
-    return {
-        'buys': buys,
-        'sell': sells,
-    }
+
+    for buy in buys:
+        # this function will ensure changes in qty are recorded
+        Trade.objects.update_or_create(
+            #lookup fields (unique)
+            user=request.user,
+            trade_id=buy['asset_id'],
+            # saves defaults to row
+            defaults={
+                "symbol": buy["symbol"],
+                "qty":    buy["qty"],
+                "side":   buy["side"],
+                "price":  buy["avg_entry_price"],
+            }
+        )
+        
+    # marks current trades as sold
+    for sell in sells:
+        sell.side = 'sell'
+        sell.save(update_fields=["side"])
 
