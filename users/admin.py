@@ -1,6 +1,6 @@
 from django.contrib import admin
-from .models import Profile, Trade
+from .models import Profile, Position
 
 admin.site.register(Profile)
-admin.site.register(Trade)
+admin.site.register(Position)
 

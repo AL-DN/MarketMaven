@@ -25,12 +25,12 @@ class Profile(models.Model):
             img.thumbnail(output_size)
             img.save(self.image.path)
 
-class Trade(models.Model):
+class Position(models.Model):
     # relationships
-    user      = models.ForeignKey(User, on_delete=models.CASCADE, related_name="trades")
+    user      = models.ForeignKey(User, on_delete=models.CASCADE, related_name="positions")
 
     # info
-    trade_id  = models.CharField(max_length=64)
+    position_id  = models.CharField(max_length=64)
     symbol    = models.CharField(max_length=16)
     qty       = models.DecimalField(max_digits=20, decimal_places=4)
     side      = models.CharField(max_length=4)
@@ -46,5 +46,5 @@ class Trade(models.Model):
     )
 
     class Meta:
-        unique_together = ("user", "trade_id")         # prevents duplicates
+        unique_together = ("user", "position_id")         # prevents duplicates
         ordering = ("-filled_at",)

@@ -4,7 +4,7 @@ from django.shortcuts import redirect
 import requests
 import os
 from django.conf import settings
-from .models import Profile, Trade
+from .models import Profile, Position
 from pprint import pprint
 
 def code_for_token(auth_code):
@@ -101,8 +101,8 @@ def get_positions(request):
 
 def filter_positions(request):
     
-    # gets (list of Trade objects) trades saved from last login in DB
-    prev = list(request.user.trades.all())    
+    # gets (list of Position objects) Positions saved from last login in DB
+    prev = list(request.user.positions.all())    
 
     # gets *list of dicts) current positions from Alpaca API
     new = get_positions(request)
@@ -118,10 +118,10 @@ def filter_positions(request):
 
     for buy in buys:
         # this function will ensure changes in qty are recorded
-        Trade.objects.update_or_create(
+        Position.objects.update_or_create(
             #lookup fields (unique)
             user=request.user,
-            trade_id=buy['asset_id'],
+            Position_id=buy['asset_id'],
             # saves defaults to row
             defaults={
                 "symbol": buy["symbol"],
@@ -131,7 +131,7 @@ def filter_positions(request):
             }
         )
         
-    # marks current trades as sold
+    # marks current Positions as sold
     for sell in sells:
         sell.side = 'sell'
         sell.save(update_fields=["side"])

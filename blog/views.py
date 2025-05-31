@@ -4,6 +4,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
 from django.contrib.auth.models import User
 
+from users.models import Position
 from users.utils import filter_positions
 from .models import Post
 
@@ -112,10 +113,16 @@ def about(request):
 
 
 class NewTradesView(TemplateView):
-    template_name = "blog/new_trades.html"
-
+    template_name = "blog/new_positions.html"
     def get(self, request, *args, **kwargs):
-        # Either recompute:
-        diff = filter_positions(request)
-        # …or pull from session if you stored it there in login
-        return self.render_to_response(diff)
+        
+        # updates positions
+        filter_positions(request)
+        return super().get(request,*args,**kwargs)
+        
+    def get_queryset(self):
+        return Position.objects.filter(
+            user = self.request.user,
+            posted = False,
+            dismissed = False,
+        )
