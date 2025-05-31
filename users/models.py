@@ -41,10 +41,6 @@ class Position(models.Model):
     posted    = models.BooleanField(default=False)     # a post already exists
     dismissed = models.BooleanField(default=False)     # user said “nah, don’t ask again”
 
-    post      = models.OneToOneField(
-        "blog.Post", on_delete=models.SET_NULL, null=True, blank=True
-    )
-
     class Meta:
         unique_together = ("user", "position_id")         # prevents duplicates
         ordering = ("-filled_at",)

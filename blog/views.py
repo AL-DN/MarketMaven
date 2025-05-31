@@ -18,14 +18,14 @@ from .models import Post
 class PostForm(forms.ModelForm):
     class Meta:
         model = Post
-        fields = ['symbol','type','content']
+        fields = ['symbol','side','content']
         
     def __init__(self, *args, **kwargs):
         super().__init__(*args,**kwargs)
         
         # sets fields 
         self.fields['symbol'].disabled = True
-        self.fields['type'].disabled = True
+        self.fields['side'].disabled = True
         
 
 
@@ -54,27 +54,26 @@ class PostDetailView(DetailView):
 class PostCreateView(LoginRequiredMixin, CreateView):
     model=Post
     form_class = PostForm
-    
-    def get_initial(self):
-        inital = super().get_initial()
-        
-        # gets query parameters passed thru url
-        symbol = self.request.GET.get('symbol')
-        type = self.request.GET.get('type')
 
-        if symbol:
-            inital['symbol'] = symbol
-            #print(f"symbol {inital['symbol']}")
-        if type:
-            inital['type'] = type
-            #print(f"type {inital['type']}")
-        #pprint(inital)
-        return inital
+    # central override point (executes before any function)
+    def dispatch(self, request, *args, **kwargs):
+        self.position = get_object_or_404(Position, pk=kwargs['pk'], user=request.user)
+        return super().dispatch(request,*args,**kwargs)
+
+    # prefills the form
+    def get_initial(self):
+        initial = super().get_initial()
+
+        # values
+        initial['symbol'] = self.position.symbol
+        initial['side'] = self.position.side
+
+        return initial
             
     
     def form_valid(self, form):
-        form.instance.symbol = self.request.GET.get('symbol')
-        form.instance.type = self.request.GET.get('type')
+        # form.instance == Post 
+        form.instance.position = self.position
         form.instance.author = self.request.user
         return super().form_valid(form)
 

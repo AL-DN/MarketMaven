@@ -19,7 +19,14 @@
             @ ${{ position.price }}
           </td>
           <td>
-           
+            <a href="{% url 'post-create' position.pk %}" class="btn btn-sm btn-primary">
+              Write post
+            </a>
+            <form action="{% url 'dismiss-position' position.pk %}" method="post" style="display:inline;">
+              {% csrf_token %}
+              <button type="submit" class="btn btn-sm btn-outline-secondary">
+                Skip
+              </button>
             </form>
           </td>
         </tr>

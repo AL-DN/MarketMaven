@@ -3,13 +3,18 @@ from django.utils import timezone
 from django.contrib.auth.models import User
 from django.urls import reverse
 
+from users.models import Position
+
 class Post(models.Model):
+
+    # relationships
+    author = models.ForeignKey(User, on_delete=models.CASCADE)
+    position = models.OneToOneField(Position, on_delete=models.CASCADE,null=True, blank=True)
+
     symbol = models.CharField(default='', max_length=4)
     type = models.CharField(default='', max_length=4)
     content = models.TextField()
-    
     date_posted = models.DateTimeField(default=timezone.now)
-    author = models.ForeignKey(User, on_delete=models.CASCADE)
     
     def __str__(self):
         return self.symbol
