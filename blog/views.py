@@ -112,8 +112,13 @@ def about(request):
     return render(request, 'blog/about.html',context= {'title': 'About'})
 
 
-class NewTradesView(TemplateView):
+class NewPositionsView(LoginRequiredMixin, ListView):
+    model = Position
+
+    # template config
     template_name = "blog/new_positions.html"
+    context_object_name = "positions"
+
     def get(self, request, *args, **kwargs):
         
         # updates positions

@@ -121,7 +121,7 @@ def filter_positions(request):
         Position.objects.update_or_create(
             #lookup fields (unique)
             user=request.user,
-            Position_id=buy['asset_id'],
+            position_id=buy['asset_id'],
             # saves defaults to row
             defaults={
                 "symbol": buy["symbol"],
