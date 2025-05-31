@@ -1,34 +1,18 @@
 from pprint import pprint
-from django.shortcuts import render, get_object_or_404
+from django.shortcuts import redirect, render, get_object_or_404
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
 from django.contrib.auth.models import User
 
+from blog.forms import PostForm
 from users.models import Position
 from users.utils import filter_positions
 from .models import Post
 
-from django.views.generic import TemplateView
-
-# to overide forms
-from django import forms
-from .models import Post
-
-# overides the form sidget
-class PostForm(forms.ModelForm):
-    class Meta:
-        model = Post
-        fields = ['symbol','side','content']
-        
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args,**kwargs)
-        
-        # sets fields 
-        self.fields['symbol'].disabled = True
-        self.fields['side'].disabled = True
-        
+from django.contrib.auth.decorators import login_required
 
 
+      
 class PostListView(ListView):
     model=Post
     template_name='blog/home.html' #  <app>/<model>_<viewtype>.html
@@ -67,9 +51,7 @@ class PostCreateView(LoginRequiredMixin, CreateView):
         # values
         initial['symbol'] = self.position.symbol
         initial['side'] = self.position.side
-
-        return initial
-            
+        return initial     
     
     def form_valid(self, form):
         # form.instance == Post 
@@ -80,7 +62,7 @@ class PostCreateView(LoginRequiredMixin, CreateView):
 
 class PostUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
     model=Post
-    fields = ['title','content']
+    fields = ['content']
     # context_object_name=object
     # template_name = post_detail.html
 
@@ -130,3 +112,10 @@ class NewPositionsView(LoginRequiredMixin, ListView):
             posted = False,
             dismissed = False,
         )
+
+@login_required
+def dismiss_position(request, pk):
+    position = get_object_or_404(Position, pk=pk, user=request.user)
+    position.dismissed = True
+    position.save()
+    return redirect('new-positions')

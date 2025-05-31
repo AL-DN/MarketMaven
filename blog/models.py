@@ -12,7 +12,7 @@ class Post(models.Model):
     position = models.OneToOneField(Position, on_delete=models.CASCADE,null=True, blank=True)
 
     symbol = models.CharField(default='', max_length=4)
-    type = models.CharField(default='', max_length=4)
+    side = models.CharField(default='', max_length=4)
     content = models.TextField()
     date_posted = models.DateTimeField(default=timezone.now)
     
