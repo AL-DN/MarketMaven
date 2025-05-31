@@ -1,6 +1,8 @@
 from django.db import models
 from django.contrib.auth.models import User
 from PIL import Image
+from django.utils import timezone
+
 
 # Create your models here.
 
@@ -22,3 +24,27 @@ class Profile(models.Model):
             output_size = (300,300)
             img.thumbnail(output_size)
             img.save(self.image.path)
+
+class Trade(models.Model):
+    # relationships
+    user      = models.ForeignKey(User, on_delete=models.CASCADE, related_name="trades")
+
+    # info
+    trade_id  = models.CharField(max_length=64)
+    symbol    = models.CharField(max_length=16)
+    qty       = models.DecimalField(max_digits=20, decimal_places=4)
+    side      = models.CharField(max_length=4)
+    filled_at = models.DateTimeField(default=timezone.now)
+    price     = models.DecimalField(max_digits=20, decimal_places=4)
+
+    # flags
+    posted    = models.BooleanField(default=False)     # a post already exists
+    dismissed = models.BooleanField(default=False)     # user said “nah, don’t ask again”
+
+    post      = models.OneToOneField(
+        "blog.Post", on_delete=models.SET_NULL, null=True, blank=True
+    )
+
+    class Meta:
+        unique_together = ("user", "trade_id")         # prevents duplicates
+        ordering = ("-filled_at",)
