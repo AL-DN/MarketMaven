@@ -25,9 +25,9 @@
       href="{% static 'blog/main.css' %}"/>
 
     {% if title %}
-    <title>Django Blog - {{ title }}</title>
+    <title>MarketMaven - {{ title }}</title>
     {% else %}
-    <title>Django Blog</title>
+    <title>MarketMaven</title>
     {% endif %}
   </head>
   <body>
@@ -36,7 +36,7 @@
     <header class="site-header">
       <nav class="navbar navbar-expand-md navbar-dark bg-steel fixed-top">
         <div class="container">
-          <a class="navbar-brand mr-4" href="{% url 'blog-home' %}">Django Blog</a>
+          <a class="navbar-brand mr-4" href="{% url 'blog-home' %}">MarketMaven</a>
           <button
             class="navbar-toggler"
             type="button"
@@ -59,6 +59,7 @@
               {% if user.is_authenticated %}
 
               <a class="nav-item nav-link" href="{% url 'profile' %}">Profile</a>
+              <a class="nav-item nav-link" href="{% url 'new-positions' %}">Post</a>
 
               <!-- POST ONLY LOGOUT -->
               <form id="logout-form" action="{% url 'logout' %}" method="post" style="display: none;">

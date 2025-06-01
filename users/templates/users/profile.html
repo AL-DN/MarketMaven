@@ -5,6 +5,10 @@
     <div class="media-body">
       <h2 class="account-heading">{{user.username}}</h2>
       <p class="text-secondary">{{user.email}}</p>
+
+      <form action="{% url 'redirect_to_alpaca' %}" method="get">
+          <button type="submit" class="btn btn-primary mb-2">Connect Brokerage</button>
+        </form>
     </div>
   </div>
 
@@ -22,14 +26,12 @@
     {% endfor %}
   </ul>
 
-
-
   <!-- Updates Image data properly-->
   <form method="POST" enctype="multipart/form-data">
     {% csrf_token %}
     <fieldset class="form-group">
       <legend class="border-bottom mb-4">Join Today</legend>
-      
+
       <!--RENDER CONECT FORMS BACK2BACK-->
       {{ u_form|crispy }} {{ p_form|crispy }}
     </fieldset>

@@ -66,6 +66,9 @@ class PostCreateView(LoginRequiredMixin, CreateView):
         # form.instance == Post 
         form.instance.position = self.position
         form.instance.author = self.request.user
+        
+        self.position.posted = True
+        self.position.save()
         return super().form_valid(form)
 
 

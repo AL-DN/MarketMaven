@@ -14,3 +14,5 @@ class PostForm(forms.ModelForm):
         # sets fields 
         self.fields['symbol'].disabled = True
         self.fields['side'].disabled = True
+
+    
