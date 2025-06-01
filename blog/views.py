@@ -20,6 +20,15 @@ class PostListView(ListView):
     ordering=['-date_posted']
     paginate_by = 10
 
+    def get_queryset(self):
+        queryset =  super().get_queryset()
+        symbol = self.request.GET.get('symbol')
+
+        if symbol:
+            queryset = queryset.filter(position__symbol__iexact=symbol)
+        
+        return queryset
+
 class UserPostListView(ListView):
     model=Post
     template_name='blog/user_posts.html' #  <app>/<model>_<viewtype>.html

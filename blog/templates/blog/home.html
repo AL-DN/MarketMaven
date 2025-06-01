@@ -1,4 +1,9 @@
 {% extends "blog/base.html" %} {% block content %}
+<form method="get" class="form-inline mb-3">
+  <input type="text" name="symbol" class="form-control mr-2" placeholder="Search by symbol" value="{{ request.GET.symbol }}">
+  <button type="submit" class="btn btn-primary">Search</button>
+</form>
+
 <div class="post-list">
   {% for post in posts %}
   <article class="media content-section">

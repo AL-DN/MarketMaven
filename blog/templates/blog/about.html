@@ -1,3 +1,44 @@
-{% extends "blog/base.html" %} {% block content %}
-<h1>About from Template</h1>
+{% extends "blog/base.html" %}
+
+{% block content %}
+<div class="container mt-4">
+  <h1 class="display-4">About Market Maven</h1>
+  <p class="lead">Empowering retail traders with verified insights and community-driven strategy sharing.</p>
+
+  <hr>
+
+  <h3>What is Market Maven?</h3>
+  <p>
+    Market Maven is a platform for retail traders to share, discuss, and learn from real, verifiable trades.
+    Every position shown on the app is authenticated through a secure connection to the user's brokerage account, 
+    ensuring that all posts reflect actual market activity — not speculation.
+  </p>
+
+  <h3>Why it Matters</h3>
+  <p>
+    In a world where misinformation and unproven strategies flood trading communities, Market Maven brings transparency.
+    Posts are only prompted after a real trade is detected, meaning every strategy comes from real money decisions, not hypotheticals.
+  </p>
+
+  <h3>How It Works</h3>
+  <ul>
+    <li>Connect your trading account securely via our API integration</li>
+    <li>Get prompted to post when you make a new trade</li>
+    <li>Follow other traders, learn from their strategies, and build your rank</li>
+    <li>Track your performance and reflect on your decision-making over time</li>
+  </ul>
+
+  <h3>What Makes It Different</h3>
+  <p>
+    Unlike typical trading communities, we verify every trade via API integration with brokers like Alpaca. 
+    This makes Market Maven the only social platform built on real trades, real data, and real insights.
+  </p>
+
+  <h3>Who Built It?</h3>
+  <p>
+    Market Maven is a student-led project developed at the University of Miami, created by engineers passionate about 
+    fintech, machine learning, and empowering everyday traders through smarter tools.
+  </p>
+
+</div>
 {% endblock %}
