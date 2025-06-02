@@ -10,7 +10,6 @@ class Profile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     image = models.ImageField(default='default.jpg',upload_to='profile_pics')
     token_data = models.JSONField(null=True, blank=True)  # or use TextField/CharField if not JSON
-    positions = models.JSONField(default=list, null=True, blank=True)
     ytd_capital_gain = models.DecimalField(default=0.00,max_digits=5, decimal_places=2)
     
     
@@ -32,10 +31,15 @@ class Position(models.Model):
     # info
     position_id  = models.CharField(max_length=64)
     symbol    = models.CharField(max_length=16)
-    qty       = models.DecimalField(max_digits=20, decimal_places=4)
+    qty       = models.FloatField(default=0.0)
     side      = models.CharField(max_length=4)
     filled_at = models.DateTimeField(default=timezone.now)
-    price     = models.DecimalField(max_digits=20, decimal_places=4)
+    buy_price     = models.FloatField(default=0.0)
+    current_price     = models.FloatField(default=0.0)
+
+    # performance metrics
+    unrealized_gain     = models.FloatField(default=0.0)
+    capital_gain     = models.FloatField(default=0.0)
 
     # flags
     posted    = models.BooleanField(default=False)     # a post already exists

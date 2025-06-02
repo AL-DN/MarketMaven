@@ -96,9 +96,20 @@ def get_positions(request):
         print(f"Failed to fetch orders: {response.status_code} {response.text}")
         return []
 
+
+# filter_positon helper functions
+def calculate_gain(current_price, buy_price, qty):
+    
+    return (float(current_price) - float(buy_price)) * float(qty)
+
+def _to_float(val, default = 0.0):
+    try:
+        return float(val)
+    except(TypeError, ValueError):
+        return default
+
 # recognizes changes in users positions in order to
 # return a dictionary of buys and sells since last login
-
 def filter_positions(request):
     
     # gets (list of Position objects) Positions saved from last login in DB
@@ -114,10 +125,18 @@ def filter_positions(request):
     # filter into buy and sell lists
     buys  = [p for p in new  if p['symbol'] not in prev_syms]
     sells = [p for p in prev if p.symbol not in new_syms]
+    holds = [p for p in new if p['symbol'] in prev_syms]
 
 
     for buy in buys:
-        # this function will ensure changes in qty are recorded
+
+        # converts json strings to floats
+        qty          = _to_float(buy.get("qty"))
+        buy_price    = _to_float(buy.get("avg_entry_price"))
+        current_price   = _to_float(buy.get("current_price"))
+
+
+        # this function will ensure changes in qty,cost,price are recorded
         Position.objects.update_or_create(
             #lookup fields (unique)
             user=request.user,
@@ -125,14 +144,36 @@ def filter_positions(request):
             # saves defaults to row
             defaults={
                 "symbol": buy["symbol"],
-                "qty":    buy["qty"],
+                "qty":    qty,
                 "side":   buy["side"],
-                "price":  buy["avg_entry_price"],
+                "buy_price":  buy_price,
+                "current_price": current_price
             }
         )
-        
-    # marks current Positions as sold
+
+    # updates the current price of stocks that are currently held / unrealized gain
+    for hold in holds:
+
+        # updates buy and current prices for stock
+        try:
+            # get position to update
+            position = Position.objects.get( user=request.user, symbol=hold["symbol"] )
+
+            # values to update
+            position.current_price = float(hold.get('current_price', 0.0))
+            position.buy_price = float(hold.get("avg_entry_price", 0.0))
+            position.unrealized_gain = calculate_gain(hold['current_price'], hold["avg_entry_price"], hold['qty'])
+            position.save(update_fields=["current_price", "buy_price", "unrealized_gain"])
+
+        except Position.DoesNotExist:
+            pass
+
     for sell in sells:
+        # marks positions as sold
         sell.side = 'sell'
-        sell.save(update_fields=["side"])
+
+        # updates capital gain
+        position.capital_gain = calculate_gain(sell['current_price'], sell["avg_entry_price"], sell['qty'])
+
+        sell.save(update_fields=["side", "capital_gain"])
 

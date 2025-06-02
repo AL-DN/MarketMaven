@@ -24,7 +24,7 @@ class Migration(migrations.Migration):
                 ('qty', models.DecimalField(decimal_places=4, max_digits=20)),
                 ('side', models.CharField(max_length=4)),
                 ('filled_at', models.DateTimeField(default=django.utils.timezone.now)),
-                ('price', models.DecimalField(decimal_places=4, max_digits=20)),
+                ('buy_price', models.DecimalField(decimal_places=4, max_digits=20)),
                 ('posted', models.BooleanField(default=False)),
                 ('dismissed', models.BooleanField(default=False)),
                 ('post', models.OneToOneField(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, to='blog.post')),

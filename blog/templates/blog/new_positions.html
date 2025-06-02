@@ -16,7 +16,7 @@
           <td>{{ position.filled_at|date:"m/d H:i" }}</td>
           <td>
             {{ position.side|capfirst }} {{ position.qty }} {{ position.symbol }}
-            @ ${{ position.price }}
+            @ ${{ position.buy_price }}
           </td>
           <td>
             <a href="{% url 'post-create' position.pk %}" class="btn btn-sm btn-primary">
