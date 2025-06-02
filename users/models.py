@@ -1,3 +1,4 @@
+from dis import Positions
 from django.db import models
 from django.contrib.auth.models import User
 from PIL import Image
@@ -12,7 +13,11 @@ class Profile(models.Model):
     token_data = models.JSONField(null=True, blank=True)  # or use TextField/CharField if not JSON
     ytd_capital_gain = models.DecimalField(default=0.00,max_digits=5, decimal_places=2)
     
+   
+
     
+
+
     def __str__(self):
         return f'{self.user.username} Profile'
     
@@ -40,6 +45,11 @@ class Position(models.Model):
     # performance metrics
     unrealized_gain     = models.FloatField(default=0.0)
     capital_gain     = models.FloatField(default=0.0)
+
+    # for ytd calculations
+    sell_date = models.DateTimeField(blank=True, null=True)
+    buy_date = models.DateTimeField(blank=True, null=True)
+
 
     # flags
     posted    = models.BooleanField(default=False)     # a post already exists

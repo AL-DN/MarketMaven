@@ -1,11 +1,16 @@
 import copy
+from datetime import timedelta
 from django.http import HttpResponse, JsonResponse
 from django.shortcuts import redirect
 import requests
 import os
 from django.conf import settings
 from .models import Profile, Position
-from pprint import pprint
+from pprint import 
+
+from .models import Position
+
+from django.utils import timezone
 
 def code_for_token(auth_code):
     token_url = "https://api.alpaca.markets/oauth/token"
@@ -131,8 +136,8 @@ def filter_positions(request):
     for buy in buys:
 
         # converts json strings to floats
-        qty          = _to_float(buy.get("qty"))
-        buy_price    = _to_float(buy.get("avg_entry_price"))
+        qty             = _to_float(buy.get("qty"))
+        buy_price       = _to_float(buy.get("avg_entry_price"))
         current_price   = _to_float(buy.get("current_price"))
 
 
@@ -163,7 +168,8 @@ def filter_positions(request):
             position.current_price = float(hold.get('current_price', 0.0))
             position.buy_price = float(hold.get("avg_entry_price", 0.0))
             position.unrealized_gain = calculate_gain(hold['current_price'], hold["avg_entry_price"], hold['qty'])
-            position.save(update_fields=["current_price", "buy_price", "unrealized_gain"])
+            position.buy_date = timezone.now()
+            position.save(update_fields=["current_price", "buy_price", "unrealized_gain","buy_date"])
 
         except Position.DoesNotExist:
             pass
@@ -171,9 +177,30 @@ def filter_positions(request):
     for sell in sells:
         # marks positions as sold
         sell.side = 'sell'
-
         # updates capital gain
         position.capital_gain = calculate_gain(sell['current_price'], sell["avg_entry_price"], sell['qty'])
+        # caches when it was sold (for ytd calculations)
+        position.sell_date = timezone.now()
 
-        sell.save(update_fields=["side", "capital_gain"])
+        sell.save(update_fields=["side", "capital_gain", "date_sold"])
 
+
+def update_performance(request):
+     
+    one_year_ago = timezone.now() - timedelta(days=365)
+
+     # gets users positions
+    positions = Position.objects.filter(
+        user = request.user
+        filled_at__gte=one_year_ago
+    )    
+    
+    # sums important data for calculation
+    total_unrealized = 0
+    total_cost = 0
+    for position in positions:
+        total_unrealized += position.unrealized_gain
+        total_cost += position.buy_price
+        
+
+    # saves metric to profile
