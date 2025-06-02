@@ -41,6 +41,7 @@ class Position(models.Model):
     filled_at = models.DateTimeField(default=timezone.now)
     buy_price     = models.FloatField(default=0.0)
     current_price     = models.FloatField(default=0.0)
+    price_jan1        = models.FloatField(default=0.0)
 
     # performance metrics
     unrealized_gain     = models.FloatField(default=0.0)

@@ -1,5 +1,6 @@
 import copy
 from datetime import timedelta
+import pprint
 from django.http import HttpResponse, JsonResponse
 from django.shortcuts import redirect
 import requests
@@ -187,20 +188,37 @@ def filter_positions(request):
 
 def update_performance(request):
      
-    one_year_ago = timezone.now() - timedelta(days=365)
+    one_year_ago = timezone.now() = timedelta(days=365)
 
-     # gets users positions
+    # gets users positions
+    # filtering by filled_at is filter by positions that were bought at most a year ago.
     positions = Position.objects.filter(
-        user = request.user
+        user = request.user,
         filled_at__gte=one_year_ago
     )    
     
     # sums important data for calculation
-    total_unrealized = 0
+    total_unrealized_gains = 0
     total_cost = 0
+    total_capital_gains = 0
     for position in positions:
-        total_unrealized += position.unrealized_gain
-        total_cost += position.buy_price
-        
+        total_cost += position.buy_price * position.qty
+
+        if position.side == 'sell':
+            total_capital_gains += position.capital_gain
+        else:
+            total_unrealized_gains += position.unrealized_gain        
+
+
+    # TODO: we must handle the cases that were boought more than a year ago
+
+    # calculation
+    ytd_returns = ((total_unrealized_gains + total_capital_gains) / total_cost) * 100
 
     # saves metric to profile
+    profile = Profile.objects.get(
+        user=request.user
+    )
+
+    profile.ytd_return = ytd_returns
+    profile.save()
