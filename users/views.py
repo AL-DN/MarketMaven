@@ -12,6 +12,7 @@ import string
 import urllib.parse
 
 
+
 def register(request):
 
     def save(self, *args, **kwargs):  # Accept extra arguments
@@ -51,7 +52,7 @@ def profile(request):
         context = {
             'u_form': u_form,
             'p_form': p_form,
-            'positions': request.user.profile.positions
+            'positions': request.user.positions.all()
         }
 
     return render(request, 'users/profile.html', context=context)
