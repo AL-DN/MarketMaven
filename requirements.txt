@@ -4,3 +4,4 @@ crispy-bootstrap4
 pillow
 requests
 python-dateutil
+python-dotenv
