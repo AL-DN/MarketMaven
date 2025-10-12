@@ -1,0 +1,51 @@
+{% extends "blog/base.html" %} {% block content %}
+<div class="content-section mb-4">
+  <div class="d-flex align-items-center mb-3">
+    <i class="fas fa-user-friends text-primary mr-3" style="font-size: 1.5rem;"></i>
+    <h2 class="mb-0">Following</h2>
+  </div>
+</div>
+
+<div class="user-list">
+  {% if following %}
+    {% for user in following %}
+    <article class="media content-section">
+      <a href="{% url 'user-profile' user.username %}">
+        <img class="rounded-circle article-img" src="{{ user.profile.image.url }}" />
+      </a>
+      <div class="media-body">
+        <div class="d-flex justify-content-between align-items-start">
+          <div>
+            <h3 class="mt-0 mb-1">
+              <a class="article-title" href="{% url 'user-profile' user.username %}">{{ user.username }}</a>
+            </h3>
+            <div class="d-flex align-items-center">
+              <span class="badge badge-info mr-2">
+                <i class="fas fa-users mr-1"></i>{{user.profile.get_followers_count}} followers
+              </span>
+              <span class="badge badge-secondary">
+                <i class="fas fa-user-friends mr-1"></i>{{user.profile.get_following_count}} following
+              </span>
+            </div>
+          </div>
+          <div>
+            <a href="{% url 'unfollow-user' user.username %}" class="btn btn-outline-danger btn-sm">
+              <i class="fas fa-user-minus mr-1"></i>Unfollow
+            </a>
+          </div>
+        </div>
+      </div>
+    </article>
+    {% endfor %}
+  {% else %}
+    <div class="text-center py-5">
+      <i class="fas fa-user-friends text-muted" style="font-size: 3rem;"></i>
+      <h5 class="text-muted mt-3">Not following anyone yet</h5>
+      <p class="text-muted">Start following other users to see them here.</p>
+      <a href="{% url 'user-search' %}" class="btn btn-primary">
+        <i class="fas fa-search mr-2"></i>Find Users
+      </a>
+    </div>
+  {% endif %}
+</div>
+{% endblock content %}

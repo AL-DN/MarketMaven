@@ -1,8 +1,9 @@
 import os
 from django.http import HttpResponse, JsonResponse
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
+from django.contrib.auth.models import User
 import requests
 from .models import Profile
 from users.utils import code_for_token, get_positions, getToken
@@ -106,7 +107,47 @@ def oauth_callback(request):
     else:
         return HttpResponse("Exhange of Code for Token was unsuccessful")
 
+@login_required
+def follow_user(request, username):
+    user_to_follow = get_object_or_404(User, username=username)
+    if user_to_follow != request.user:
+        request.user.profile.following.add(user_to_follow)
+        messages.success(request, f'You are now following {username}')
+    return redirect('user-profile', username=username)
 
+@login_required
+def unfollow_user(request, username):
+    user_to_unfollow = get_object_or_404(User, username=username)
+    request.user.profile.following.remove(user_to_unfollow)
+    messages.success(request, f'You have unfollowed {username}')
+    return redirect('user-profile', username=username)
 
-    
+@login_required
+def user_profile(request, username):
+    user = get_object_or_404(User, username=username)
+    is_following = request.user.profile.following.filter(id=user.id).exists()
+    context = {
+        'profile_user': user,
+        'is_following': is_following,
+        'positions': user.positions.all()
+    }
+    return render(request, 'users/user_profile.html', context)
+
+@login_required
+def user_search(request):
+    query = request.GET.get('q', '')
+    users = User.objects.filter(username__icontains=query).exclude(id=request.user.id)[:10]
+    context = {
+        'users': users,
+        'query': query
+    }
+    return render(request, 'users/user_search.html', context)
+
+@login_required
+def following_list(request):
+    following = request.user.profile.following.all()
+    context = {
+        'following': following
+    }
+    return render(request, 'users/following_list.html', context)
     

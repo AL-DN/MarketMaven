@@ -1,9 +1,9 @@
-{% extends "blog/base.html" %} {%load crispy_forms_tags %} {% block content%}
+{% extends "blog/base.html" %} {% block content%}
 
 <div class="content-section">
   <div class="media">
     <div class="position-relative">
-      <img class="rounded-circle account-img" src="{{user.profile.image.url}}" />
+      <img class="rounded-circle account-img" src="{{profile_user.profile.image.url}}" />
       <div class="position-absolute" style="bottom: 10px; right: 10px;">
         <span class="badge badge-success px-2 py-1">
           <i class="fas fa-check-circle mr-1"></i>Active
@@ -11,12 +11,39 @@
       </div>
     </div>
     <div class="media-body">
-      <h2 class="account-heading">
-        {{user.username}}
-      </h2>
-      <p class="text-secondary mb-3">
-        <i class="fas fa-envelope mr-2"></i>{{user.email}}
-      </p>
+      <div class="d-flex justify-content-between align-items-start">
+        <div>
+          <h2 class="account-heading">
+            {{profile_user.username}}
+          </h2>
+          {% if profile_user == user %}
+          <p class="text-secondary mb-3">
+            <i class="fas fa-envelope mr-2"></i>{{profile_user.email}}
+          </p>
+          {% endif %}
+          <div class="d-flex align-items-center">
+            <span class="badge badge-info mr-2">
+              <i class="fas fa-users mr-1"></i>{{profile_user.profile.get_followers_count}} followers
+            </span>
+            <span class="badge badge-secondary">
+              <i class="fas fa-user-friends mr-1"></i>{{profile_user.profile.get_following_count}} following
+            </span>
+          </div>
+        </div>
+        {% if profile_user != user %}
+        <div>
+          {% if is_following %}
+            <a href="{% url 'unfollow-user' profile_user.username %}" class="btn btn-outline-danger btn-lg">
+              <i class="fas fa-user-minus mr-2"></i>Unfollow
+            </a>
+          {% else %}
+            <a href="{% url 'follow-user' profile_user.username %}" class="btn btn-primary btn-lg">
+              <i class="fas fa-user-plus mr-2"></i>Follow
+            </a>
+          {% endif %}
+        </div>
+        {% endif %}
+      </div>
     </div>
   </div>
 
@@ -24,7 +51,7 @@
   <div class="mt-5">
     <h3 class="d-flex align-items-center">
       <i class="fas fa-chart-line mr-3 text-primary"></i>
-      Current Positions
+      Positions
     </h3>
     <div class="row">
       {% for position in positions %}
@@ -55,13 +82,12 @@
         <div class="text-center py-5">
           <i class="fas fa-chart-line text-muted" style="font-size: 3rem;"></i>
           <h5 class="text-muted mt-3">No positions to display</h5>
-          <p class="text-muted">Start by connecting your brokerage account or posting a new position.</p>
+          <p class="text-muted">This user hasn't shared any positions yet.</p>
         </div>
       </div>
       {% endfor %}
     </div>
   </div>
-
 </div>
 
 {%endblock content%}

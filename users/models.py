@@ -12,6 +12,7 @@ class Profile(models.Model):
     image = models.ImageField(default='default.jpg',upload_to='profile_pics')
     token_data = models.JSONField(null=True, blank=True)  # or use TextField/CharField if not JSON
     ytd_capital_gain = models.DecimalField(default=0.00,max_digits=5, decimal_places=2)
+    following = models.ManyToManyField(User, related_name='followers', blank=True)
     
     def __str__(self):
         return f'{self.user.username} Profile'
@@ -23,6 +24,12 @@ class Profile(models.Model):
             output_size = (300,300)
             img.thumbnail(output_size)
             img.save(self.image.path)
+    
+    def get_following_count(self):
+        return self.following.count()
+    
+    def get_followers_count(self):
+        return self.user.followers.count()
 
 class Position(models.Model):
     # relationships
