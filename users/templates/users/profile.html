@@ -20,8 +20,9 @@
     {% for position in positions %}
       <li class="list-group-item">
         <strong>Symbol:</strong> {{ position.symbol }}<br>
-        <strong>Avg Entry buy_price:</strong> {{ position.avg_entry_price }}<br>
-        <strong>Quantity:</strong> {{ position.qty }}
+        <strong>Date Executed:</strong> {{ position.filled_at }}<br>
+        <strong>Buy Price:</strong> {{ position.buy_price }}<br>
+     
       </li>
     {% empty %}
       <li class="list-group-item">No positions to display.</li>
@@ -32,7 +33,7 @@
   <form method="POST" enctype="multipart/form-data">
     {% csrf_token %}
     <fieldset class="form-group">
-      <legend class="border-bottom mb-4">Join Today</legend>
+      <legend class="border-bottom mb-4">Edit Profile</legend>
 
       <!--RENDER CONECT FORMS BACK2BACK-->
       {{ u_form|crispy }} {{ p_form|crispy }}

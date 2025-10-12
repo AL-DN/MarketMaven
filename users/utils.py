@@ -7,7 +7,7 @@ import requests
 import os
 from django.conf import settings
 from .models import Profile, Position
-
+import json
 from .models import Position
 
 from django.utils import timezone
@@ -64,6 +64,12 @@ def alpaca_api_call(request, subject):
     token_data = getToken(request.user)
     #print(f"Token Data: {token_data}")
     
+    if token_data is None:
+        return {
+            "status_code": 401,
+            "message": "Unauthorized: No token data found."
+        }
+    
     # extracts revelevant info
     access_token = token_data.get('alpaca_access_token')
     token_type = token_data.get('alpaca_token_type')
@@ -82,25 +88,29 @@ def alpaca_api_call(request, subject):
 def get_positions(request):
     
     # API Call
-    response = alpaca_api_call(request, 'positions')
-    
+    response = alpaca_api_call(request, 'account/portfolio/history')
+    with open("account.json", "w") as f:
+                json.dump(response.json(), f, indent=4)
     # validation
-    if response.status_code == 200:
-        
-        # saves powitions to user profile
-        positions = response.json()
-        
-        #pprint(positions)
-        #pprint(alpaca_api_call(request,'account').json())
-        # saves data into db
-        profile = request.user.profile
-        profile.positions = positions
-        profile.save()  
-        return positions
-    else:
-        print(f"Failed to fetch orders: {response.status_code} {response.text}")
+    try:
+        if response.status_code == 200:
+            
+            # saves positions to user profile
+            positions = response.json()
+            
+            with open("positions.json", "w") as f:
+                json.dump(positions, f, indent=4)
+                
+            #pprint(alpaca_api_call(request,'account').json())
+            # saves data into db
+            profile = request.user.profile
+            profile.positions = positions
+            profile.save()  
+            return positions
+        else:
+            return []
+    except Exception as e:
         return []
-
 
 # filter_positon helper functions
 def calculate_gain(current_price, buy_price, qty):
@@ -120,7 +130,7 @@ def filter_positions(request):
     # gets (list of Position objects) Positions saved from last login in DB
     prev = list(request.user.positions.all())    
 
-    # gets *list of dicts) current positions from Alpaca API
+    # gets (list of dicts) current positions from Alpaca API
     new = get_positions(request)
     
     # extract their tickers
