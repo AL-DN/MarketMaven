@@ -1,3 +1,4 @@
+import os
 from django.http import HttpResponse, JsonResponse
 from django.shortcuts import render, redirect
 from django.contrib import messages
@@ -10,8 +11,6 @@ from django.conf import settings
 import random
 import string
 import urllib.parse
-
-
 
 def register(request):
 
@@ -32,7 +31,13 @@ def register(request):
 
 @login_required
 def profile(request):
-    
+    context = {
+        'positions': request.user.positions.all()
+    }
+    return render(request, 'users/profile.html', context=context)
+
+@login_required
+def settings(request):
     # Someone would like to update
     if request.method == 'POST':
         u_form= UserUpdateForm(request.POST, instance=request.user)
@@ -42,7 +47,7 @@ def profile(request):
             u_form.save()
             p_form.save()
             messages.success(request, f'Your profile has been updated')
-            return redirect('profile')
+            return redirect('settings')
 
     else:
         # arguements populate form with users data
@@ -52,16 +57,15 @@ def profile(request):
         context = {
             'u_form': u_form,
             'p_form': p_form,
-            'positions': request.user.positions.all()
         }
 
-    return render(request, 'users/profile.html', context=context)
+    return render(request, 'users/settings.html', context=context)
 
 
 # Creates URL for OAuth consent screen
 @login_required
 def redirect_to_alpaca(request):
-    client_id = settings.ALPACA_ID  # Ensure this matches your Alpaca settings
+    client_id = os.environ.get("ALPACA_ID")  # Ensure this matches your Alpaca settings
     redirect_uri = "http://127.0.0.1:8000/callback/" # must match one registered / where it redirects once consent is completed
     state = ''.join(random.choices(string.ascii_letters + string.digits, k=16))  # CSRF protection
     scope = "account:write trading"

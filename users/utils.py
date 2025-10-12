@@ -88,9 +88,9 @@ def alpaca_api_call(request, subject):
 def get_positions(request):
     
     # API Call
-    response = alpaca_api_call(request, 'account/portfolio/history')
-    with open("account.json", "w") as f:
-                json.dump(response.json(), f, indent=4)
+    response = alpaca_api_call(request, 'positions')
+    # with open("account.json", "w") as f:
+    #             json.dump(response.json(), f, indent=4)
     # validation
     try:
         if response.status_code == 200:
@@ -98,8 +98,8 @@ def get_positions(request):
             # saves positions to user profile
             positions = response.json()
             
-            with open("positions.json", "w") as f:
-                json.dump(positions, f, indent=4)
+            # with open("positions.json", "w") as f:
+            #     json.dump(positions, f, indent=4)
                 
             #pprint(alpaca_api_call(request,'account').json())
             # saves data into db

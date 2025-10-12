@@ -1,19 +1,29 @@
 {% extends "blog/base.html" %} {% load crispy_forms_tags %} {% block content%}
 <div class="content-section">
+  <div class="text-center mb-4">
+    <i class="fas fa-user-plus text-primary" style="font-size: 3rem;"></i>
+    <h2 class="mt-3">Join MarketMaven</h2>
+    <p class="text-muted">Create your account and start tracking positions</p>
+  </div>
+  
   <form method="POST">
     {% csrf_token %}
     <fieldset class="form-group">
-      <legend class="border-bottom mb-4">Join Today</legend>
       {{ form|crispy }}
     </fieldset>
     <div class="form-group">
-      <button class="btn btn-outline-info" type="submit">Sign Up</button>
+      <button class="btn btn-primary btn-lg btn-block" type="submit">
+        <i class="fas fa-user-plus mr-2"></i>Create Account
+      </button>
     </div>
   </form>
-  <div class="border-top pt-url3">
+  
+  <div class="border-top pt-4 text-center">
     <small class="text-muted">
       Already have an account?
-      <a class="ml-2" href="{% url 'login' %}"> Sign In </a>
+      <a class="ml-2 text-primary font-weight-bold" href="{% url 'login' %}">
+        <i class="fas fa-sign-in-alt mr-1"></i>Sign In
+      </a>
     </small>
   </div>
 </div>

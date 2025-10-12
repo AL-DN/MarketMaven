@@ -152,3 +152,4 @@ BASE_URL = "http://localhost:8000/"
 
 ALPACA_ID = os.environ.get("ALPACA_ID")
 ALPACA_SECRET = os.environ.get("ALPACA_SECRET")
+
