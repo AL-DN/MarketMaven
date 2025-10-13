@@ -1,0 +1,201 @@
+{% extends "blog/base.html" %} {% block content%}
+
+<div class="content-section">
+  <div class="d-flex align-items-center mb-4">
+    <i class="fas fa-chart-bar text-primary mr-3" style="font-size: 1.5rem;"></i>
+    <h2 class="mb-0">My Trading Statistics</h2>
+  </div>
+  
+  <!-- Key Performance Indicators -->
+  <div class="row mb-4">
+    <div class="col-md-3 mb-3">
+      <div class="card border-0 shadow-sm text-center">
+        <div class="card-body">
+          <i class="fas fa-percentage text-success mb-2" style="font-size: 2rem;"></i>
+          <h4 class="text-success mb-1">{{ stats.avg_return_pct }}%</h4>
+          <p class="text-muted mb-0">Average Return</p>
+        </div>
+      </div>
+    </div>
+    
+    <div class="col-md-3 mb-3">
+      <div class="card border-0 shadow-sm text-center">
+        <div class="card-body">
+          <i class="fas fa-percentage text-primary mb-2" style="font-size: 2rem;"></i>
+          <h4 class="text-primary mb-1">{{ stats.win_rate }}%</h4>
+          <p class="text-muted mb-0">Win Rate</p>
+        </div>
+      </div>
+    </div>
+    
+    <div class="col-md-3 mb-3">
+      <div class="card border-0 shadow-sm text-center">
+        <div class="card-body">
+          <i class="fas fa-exchange-alt text-info mb-2" style="font-size: 2rem;"></i>
+          <h4 class="text-info mb-1">{{ stats.total_positions }}</h4>
+          <p class="text-muted mb-0">Total Trades</p>
+        </div>
+      </div>
+    </div>
+    
+    <div class="col-md-3 mb-3">
+      <div class="card border-0 shadow-sm text-center">
+        <div class="card-body">
+          <i class="fas fa-trophy text-warning mb-2" style="font-size: 2rem;"></i>
+          <h4 class="text-warning mb-1">{{ stats.sharpe_ratio }}</h4>
+          <p class="text-muted mb-0">Sharpe Ratio</p>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Detailed Statistics -->
+  <div class="row">
+    <!-- Performance Metrics -->
+    <div class="col-md-6 mb-4">
+      <div class="card border-0 shadow-sm">
+        <div class="card-header bg-primary text-white">
+          <h5 class="mb-0">
+            <i class="fas fa-chart-pie mr-2"></i>Performance Metrics
+          </h5>
+        </div>
+        <div class="card-body">
+          <div class="row">
+            <div class="col-6 mb-3">
+              <div class="d-flex justify-content-between">
+                <span class="text-muted">Best Return:</span>
+                <span class="font-weight-bold text-success">{{ stats.best_return_pct }}%</span>
+              </div>
+            </div>
+            <div class="col-6 mb-3">
+              <div class="d-flex justify-content-between">
+                <span class="text-muted">Worst Return:</span>
+                <span class="font-weight-bold text-danger">{{ stats.worst_return_pct }}%</span>
+              </div>
+            </div>
+            <div class="col-6 mb-3">
+              <div class="d-flex justify-content-between">
+                <span class="text-muted">Consistency:</span>
+                <span class="font-weight-bold">{{ stats.consistency_score }}%</span>
+              </div>
+            </div>
+            <div class="col-6 mb-3">
+              <div class="d-flex justify-content-between">
+                <span class="text-muted">Trading Freq:</span>
+                <span class="font-weight-bold">{{ stats.trading_frequency }}/month</span>
+              </div>
+            </div>
+            <div class="col-6 mb-3">
+              <div class="d-flex justify-content-between">
+                <span class="text-muted">Max Drawdown:</span>
+                <span class="font-weight-bold text-danger">{{ stats.max_drawdown_pct }}%</span>
+              </div>
+            </div>
+            <div class="col-6 mb-3">
+              <div class="d-flex justify-content-between">
+                <span class="text-muted">Profit Factor:</span>
+                <span class="font-weight-bold">{{ stats.profit_factor }}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Trade Breakdown -->
+    <div class="col-md-6 mb-4">
+      <div class="card border-0 shadow-sm">
+        <div class="card-header bg-info text-white">
+          <h5 class="mb-0">
+            <i class="fas fa-chart-bar mr-2"></i>Trade Breakdown
+          </h5>
+        </div>
+        <div class="card-body">
+          <div class="row">
+            <div class="col-6 mb-3">
+              <div class="d-flex justify-content-between">
+                <span class="text-muted">Winning Trades:</span>
+                <span class="font-weight-bold text-success">{{ stats.winning_trades }}</span>
+              </div>
+            </div>
+            <div class="col-6 mb-3">
+              <div class="d-flex justify-content-between">
+                <span class="text-muted">Losing Trades:</span>
+                <span class="font-weight-bold text-danger">{{ stats.losing_trades }}</span>
+              </div>
+            </div>
+            <div class="col-12">
+              <div class="progress mb-2">
+                <div class="progress-bar bg-success" style="width: {{ stats.win_rate }}%"></div>
+                <div class="progress-bar bg-danger" style="width: {{ 100|add:stats.win_rate|floatformat:0|add:"-" }}%"></div>
+              </div>
+              <small class="text-muted">Win/Loss Distribution</small>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Recent Positions -->
+  <div class="row">
+    <div class="col-12">
+      <div class="card border-0 shadow-sm">
+        <div class="card-header bg-dark text-white">
+          <h5 class="mb-0">
+            <i class="fas fa-list mr-2"></i>Recent Positions
+          </h5>
+        </div>
+        <div class="card-body">
+          {% if recent_positions %}
+          <div class="table-responsive">
+            <table class="table table-hover">
+              <thead>
+                <tr>
+                  <th>Symbol</th>
+                  <th>Side</th>
+                  <th>Quantity</th>
+                  <th>Price</th>
+                  <th>Date</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for position in recent_positions %}
+                <tr>
+                  <td class="font-weight-bold">{{ position.symbol }}</td>
+                  <td>
+                    <span class="badge badge-{% if position.side == 'BUY' %}success{% else %}danger{% endif %}">
+                      {{ position.side }}
+                    </span>
+                  </td>
+                  <td>{{ position.qty }}</td>
+                  <td>${{ position.buy_price }}</td>
+                  <td>{{ position.filled_at|date:"M d, Y" }}</td>
+                </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+          {% else %}
+          <div class="text-center py-4">
+            <i class="fas fa-chart-line text-muted" style="font-size: 2rem;"></i>
+            <p class="text-muted mt-2">No positions found</p>
+          </div>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Navigation -->
+  <div class="text-center mt-4">
+    <a href="{% url 'profile' %}" class="btn btn-outline-primary mr-2">
+      <i class="fas fa-user mr-2"></i>Back to Profile
+    </a>
+    <a href="{% url 'settings' %}" class="btn btn-outline-secondary">
+      <i class="fas fa-cog mr-2"></i>Settings
+    </a>
+  </div>
+</div>
+
+{%endblock content%}

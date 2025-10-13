@@ -150,4 +150,59 @@ def following_list(request):
         'following': following
     }
     return render(request, 'users/following_list.html', context)
+
+@login_required
+def user_stats(request):
+    """Display comprehensive user trading statistics"""
+    stats = request.user.profile.get_trading_stats()
+    positions = request.user.positions.all().order_by('-filled_at')[:10]  # Recent positions
+    
+    context = {
+        'stats': stats,
+        'recent_positions': positions
+    }
+    return render(request, 'users/user_stats.html', context)
+
+def public_stats(request, username):
+    """Display public trading statistics for any user"""
+    user = get_object_or_404(User, username=username)
+    stats = user.profile.get_trading_stats()
+    
+    context = {
+        'profile_user': user,
+        'stats': stats
+    }
+    return render(request, 'users/public_stats.html', context)
+
+@login_required
+def leaderboard(request):
+    """Display top performing traders leaderboard"""
+    # Get all users with positions
+    users_with_positions = User.objects.filter(positions__isnull=False).distinct()
+    
+    # Calculate stats for each user and create leaderboard
+    leaderboard_data = []
+    
+    for user in users_with_positions:
+        stats = user.profile.get_trading_stats()
+        if stats['total_positions'] > 0:  # Only include users with actual trades
+            # Calculate performance score (average return * win rate / 100)
+            performance_score = stats['avg_return_pct'] * stats['win_rate'] / 100
+            leaderboard_data.append({
+                'user': user,
+                'stats': stats,
+                'score': performance_score
+            })
+    
+    # Sort by performance score (descending)
+    leaderboard_data.sort(key=lambda x: x['score'], reverse=True)
+    
+    # Get top 20 traders
+    top_traders = leaderboard_data[:20]
+    
+    context = {
+        'top_traders': top_traders,
+        'total_traders': len(leaderboard_data)
+    }
+    return render(request, 'users/leaderboard.html', context)
     

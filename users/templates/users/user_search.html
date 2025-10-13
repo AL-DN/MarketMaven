@@ -22,35 +22,38 @@
 </div>
 
 <div class="user-list">
-  {% if users %}
-    {% for profile_user in users %}
+  {% if users_with_status %}
+    {% for user_data in users_with_status %}
     <article class="media content-section">
-      <a href="{% url 'user-profile' profile_user.username %}">
-        <img class="rounded-circle article-img" src="{{ profile_user.profile.image.url }}" />
+      <a href="{% url 'user-profile' user_data.user.username %}">
+        <img class="rounded-circle article-img" src="{{ user_data.user.profile.image.url }}" />
       </a>
       <div class="media-body">
         <div class="d-flex justify-content-between align-items-start">
           <div>
             <h3 class="mt-0 mb-1">
-              <a class="article-title" href="{% url 'user-profile' profile_user.username %}">{{ profile_user.username }}</a>
+              <a class="article-title" href="{% url 'user-profile' user_data.user.username %}">{{ user_data.user.username }}</a>
             </h3>
             <div class="d-flex align-items-center">
               <span class="badge badge-info mr-2">
-                <i class="fas fa-users mr-1"></i>{{profile_user.profile.get_followers_count}} followers
+                <i class="fas fa-users mr-1"></i>{{user_data.user.profile.get_followers_count}} followers
               </span>
               <span class="badge badge-secondary">
-                <i class="fas fa-user-friends mr-1"></i>{{profile_user.profile.get_following_count}} following
+                <i class="fas fa-user-friends mr-1"></i>{{user_data.user.profile.get_following_count}} following
               </span>
             </div>
           </div>
           <div>
-            {% if profile_user != user %}
-              {% if user.profile.following.filter(id=profile_user.id).exists %}
-              <a href="{% url 'unfollow-user' profile_user.username %}" class="btn btn-outline-danger btn-sm">
+            <a href="{% url 'public-stats' user_data.user.username %}" class="btn btn-outline-info btn-sm mr-2">
+              <i class="fas fa-chart-line mr-1"></i>Stats
+            </a>
+            {% if user_data.user != user %}
+              {% if user_data.is_following %}
+              <a href="{% url 'unfollow-user' user_data.user.username %}" class="btn btn-outline-danger btn-sm">
                 <i class="fas fa-user-minus mr-1"></i>Unfollow
               </a>
               {% else %}
-              <a href="{% url 'follow-user' profile_user.username %}" class="btn btn-primary btn-sm">
+              <a href="{% url 'follow-user' user_data.user.username %}" class="btn btn-primary btn-sm">
                 <i class="fas fa-user-plus mr-1"></i>Follow
               </a>
               {% endif %}

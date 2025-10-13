@@ -188,11 +188,11 @@ def filter_positions(request):
         # marks positions as sold
         sell.side = 'sell'
         # updates capital gain
-        position.capital_gain = calculate_gain(sell['current_price'], sell["avg_entry_price"], sell['qty'])
+        sell.capital_gain = calculate_gain(sell.current_price, sell.buy_price, sell.qty)
         # caches when it was sold (for ytd calculations)
-        position.sell_date = timezone.now()
+        sell.sell_date = timezone.now()
 
-        sell.save(update_fields=["side", "capital_gain", "date_sold"])
+        sell.save(update_fields=["side", "capital_gain", "sell_date"])
 
 
 # def update_performance(request):

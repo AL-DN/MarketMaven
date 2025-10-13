@@ -1,0 +1,112 @@
+{% extends "blog/base.html" %} {% block content%}
+
+<div class="content-section">
+  <div class="d-flex align-items-center mb-4">
+    <i class="fas fa-trophy text-warning mr-3" style="font-size: 1.5rem;"></i>
+    <h2 class="mb-0">Top Traders Leaderboard</h2>
+  </div>
+  
+  <p class="text-muted mb-4">Ranked by performance score (Average Return × Win Rate). See how you stack up against other traders!</p>
+  
+  {% if top_traders %}
+  <div class="row">
+    {% for trader in top_traders %}
+    <div class="col-md-6 col-lg-4 mb-4">
+      <div class="card border-0 shadow-sm h-100">
+        <div class="card-body">
+          <div class="d-flex align-items-center mb-3">
+            <div class="position-relative mr-3">
+              <a href="{% url 'user-profile' trader.user.username %}">
+                <img class="rounded-circle" src="{{ trader.user.profile.image.url }}" style="width: 50px; height: 50px;">
+              </a>
+              <div class="position-absolute" style="top: -5px; right: -5px;">
+                <span class="badge badge-warning badge-pill">
+                  #{{ forloop.counter }}
+                </span>
+              </div>
+            </div>
+            <div class="flex-grow-1">
+              <h5 class="mb-1">
+                <a href="{% url 'user-profile' trader.user.username %}" class="text-decoration-none">
+                  {{ trader.user.username }}
+                </a>
+              </h5>
+              <small class="text-muted">
+                {{ trader.stats.total_positions }} trades
+              </small>
+            </div>
+          </div>
+          
+          <!-- Key Stats -->
+          <div class="row text-center mb-3">
+            <div class="col-4">
+              <div class="h6 mb-1 {% if trader.stats.avg_return_pct >= 0 %}text-success{% else %}text-danger{% endif %}">
+                {{ trader.stats.avg_return_pct }}%
+              </div>
+              <small class="text-muted">Avg Return</small>
+            </div>
+            <div class="col-4">
+              <div class="h6 mb-1 text-primary">
+                {{ trader.stats.win_rate }}%
+              </div>
+              <small class="text-muted">Win Rate</small>
+            </div>
+            <div class="col-4">
+              <div class="h6 mb-1 text-info">
+                {{ trader.stats.sharpe_ratio }}
+              </div>
+              <small class="text-muted">Sharpe</small>
+            </div>
+          </div>
+          
+          <!-- Performance Score -->
+          <div class="text-center mb-3">
+            <div class="badge badge-primary badge-pill px-3 py-2">
+              Score: {{ trader.score|floatformat:1 }}
+            </div>
+          </div>
+          
+          <!-- Action Buttons -->
+          <div class="text-center">
+            <a href="{% url 'user-profile' trader.user.username %}" class="btn btn-outline-primary btn-sm mr-2">
+              <i class="fas fa-user mr-1"></i>Profile
+            </a>
+            <a href="{% url 'public-stats' trader.user.username %}" class="btn btn-outline-info btn-sm">
+              <i class="fas fa-chart-line mr-1"></i>Stats
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+  
+  <div class="text-center mt-4">
+    <p class="text-muted">
+      Showing top {{ top_traders|length }} of {{ total_traders }} active traders
+    </p>
+  </div>
+  
+  {% else %}
+  <div class="text-center py-5">
+    <i class="fas fa-trophy text-muted" style="font-size: 3rem;"></i>
+    <h5 class="text-muted mt-3">No traders yet</h5>
+    <p class="text-muted">Be the first to start trading and appear on the leaderboard!</p>
+    <a href="{% url 'new-positions' %}" class="btn btn-primary">
+      <i class="fas fa-plus mr-2"></i>Start Trading
+    </a>
+  </div>
+  {% endif %}
+  
+  <!-- Navigation -->
+  <div class="text-center mt-4">
+    <a href="{% url 'blog-home' %}" class="btn btn-outline-secondary mr-2">
+      <i class="fas fa-home mr-2"></i>Home
+    </a>
+    <a href="{% url 'user-search' %}" class="btn btn-outline-primary">
+      <i class="fas fa-search mr-2"></i>Find Traders
+    </a>
+  </div>
+</div>
+
+{%endblock content%}

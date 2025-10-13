@@ -38,10 +38,13 @@ urlpatterns = [
     path('profile/', user_views.profile, name='profile'),
     path('settings/', user_views.settings, name='settings'),
     path('user/<str:username>/', user_views.user_profile, name='user-profile'),
+    path('user/<str:username>/stats/', user_views.public_stats, name='public-stats'),
+    path('stats/', user_views.user_stats, name='user-stats'),
     path('follow/<str:username>/', user_views.follow_user, name='follow-user'),
     path('unfollow/<str:username>/', user_views.unfollow_user, name='unfollow-user'),
     path('search/', user_views.user_search, name='user-search'),
     path('following/', user_views.following_list, name='following-list'),
+    path('leaderboard/', user_views.leaderboard, name='leaderboard'),
 
     path('login/', auth_views.LoginView.as_view(template_name='users/login.html'), name='login'),
     path('logout/', auth_views.LogoutView.as_view(template_name='users/logout.html'), name='logout'),
