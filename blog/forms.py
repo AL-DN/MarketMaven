@@ -1,6 +1,6 @@
 # to overide forms
 from django import forms
-from .models import Post
+from .models import Post, Comment
 
 # overides the form sidget
 class PostForm(forms.ModelForm):
@@ -15,4 +15,15 @@ class PostForm(forms.ModelForm):
         self.fields['symbol'].disabled = True
         self.fields['side'].disabled = True
 
+class CommentForm(forms.ModelForm):
+    class Meta:
+        model = Comment
+        fields = ['content']
+        widgets = {
+            'content': forms.Textarea(attrs={
+                'class': 'form-control',
+                'rows': 3,
+                'placeholder': 'Share your thoughts on this trade...'
+            })
+        }
     

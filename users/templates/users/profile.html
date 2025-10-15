@@ -17,17 +17,32 @@
       <p class="text-secondary mb-3">
         <i class="fas fa-envelope mr-2"></i>{{user.email}}
       </p>
+      
+      <!-- Your Trading Badge -->
+      <div class="mb-3">
+        {% with badge=user.profile.get_badge %}
+        <div class="badge-container">
+          <div class="badge badge-{{ badge.color }} badge-pill px-3 py-2 mb-2 d-inline-block">
+            <i class="{{ badge.icon }} mr-2"></i>
+            <strong>{{ badge.rank }}</strong> - {{ badge.name }}
+          </div>
+          <div class="badge-description text-muted small">
+            <i class="fas fa-info-circle mr-1"></i>{{ badge.description }}
+          </div>
+        </div>
+        {% endwith %}
+      </div>
     </div>
   </div>
 
-   <!-- Positions list -->
+   <!-- Current Positions -->
   <div class="mt-5">
     <h3 class="d-flex align-items-center">
       <i class="fas fa-chart-line mr-3 text-primary"></i>
       Current Positions
     </h3>
     <div class="row">
-      {% for position in positions %}
+      {% for position in current_positions %}
       <div class="col-md-6 mb-3">
         <div class="card border-0 shadow-sm">
           <div class="card-body">
@@ -36,6 +51,9 @@
                 <i class="fas fa-chart-line mr-2 text-primary"></i>
                 {{ position.symbol }}
               </h5>
+              <span class="badge badge-{% if position.get_return_percentage > 0 %}success{% else %}danger{% endif %}">
+                {{ position.get_return_percentage|floatformat:2 }}%
+              </span>
             </div>
             <div class="row text-muted small">
               <div class="col-6">
@@ -44,7 +62,7 @@
               </div>
               <div class="col-6">
                 <i class="fas fa-dollar-sign mr-1"></i>
-                {{ position.buy_price }}
+                ${{ position.buy_price|floatformat:2 }}
               </div>
             </div>
           </div>
@@ -54,8 +72,100 @@
       <div class="col-12">
         <div class="text-center py-5">
           <i class="fas fa-chart-line text-muted" style="font-size: 3rem;"></i>
-          <h5 class="text-muted mt-3">No positions to display</h5>
+          <h5 class="text-muted mt-3">No current positions</h5>
           <p class="text-muted">Start by connecting your brokerage account or posting a new position.</p>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+
+  <!-- Past Trades -->
+  <div class="mt-5">
+    <h3 class="d-flex align-items-center">
+      <i class="fas fa-history mr-3 text-success"></i>
+      Past Trades
+    </h3>
+    <div class="row">
+      {% for trade in past_trades %}
+      <div class="col-md-6 mb-3">
+        <div class="card border-0 shadow-sm">
+          <div class="card-body">
+            <div class="d-flex justify-content-between align-items-start mb-2">
+              <h5 class="card-title mb-0">
+                <i class="fas fa-{% if trade.side == 'buy' %}arrow-up{% else %}arrow-down{% endif %} mr-2 text-{% if trade.side == 'buy' %}success{% else %}danger{% endif %}"></i>
+                {{ trade.symbol }}
+              </h5>
+              <span class="badge badge-{% if trade.is_winning_trade %}success{% else %}danger{% endif %}">
+                {{ trade.get_return_percentage|floatformat:2 }}%
+              </span>
+            </div>
+            <div class="row text-muted small">
+              <div class="col-6">
+                <i class="fas fa-calendar mr-1"></i>
+                {{ trade.filled_at|date:"M d, Y" }}
+              </div>
+              <div class="col-6">
+                <i class="fas fa-clock mr-1"></i>
+                Closed: {{ trade.closed_at|date:"M d, Y" }}
+              </div>
+            </div>
+            <div class="row text-muted small mt-2">
+              <div class="col-6">
+                <i class="fas fa-dollar-sign mr-1"></i>
+                Buy: ${{ trade.buy_price|floatformat:2 }}
+              </div>
+              <div class="col-6">
+                <i class="fas fa-dollar-sign mr-1"></i>
+                Sell: ${{ trade.sell_price|floatformat:2 }}
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      {% empty %}
+      <div class="col-12">
+        <div class="text-center py-5">
+          <i class="fas fa-history text-muted" style="font-size: 3rem;"></i>
+          <h5 class="text-muted mt-3">No past trades</h5>
+          <p class="text-muted">Your completed trades will appear here.</p>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+
+  <!-- User Posts -->
+  <div class="mt-5">
+    <h3 class="d-flex align-items-center">
+      <i class="fas fa-comments mr-3 text-info"></i>
+      Recent Posts
+    </h3>
+    <div class="row">
+      {% for post in user_posts %}
+      <div class="col-12 mb-3">
+        <div class="card border-0 shadow-sm">
+          <div class="card-body">
+            <div class="d-flex justify-content-between align-items-start mb-2">
+              <h5 class="card-title mb-0">
+                <i class="fas fa-chart-line mr-2 text-primary"></i>
+                {{ post.symbol }} - {{ post.side|upper }}
+              </h5>
+              <small class="text-muted">{{ post.date_posted|date:"M d, Y" }}</small>
+            </div>
+            <p class="card-text">{{ post.content|truncatewords:30 }}</p>
+            <a href="{% url 'post-detail' post.pk %}" class="btn btn-outline-primary btn-sm">
+              <i class="fas fa-eye mr-1"></i>View Post
+            </a>
+          </div>
+        </div>
+      </div>
+      {% empty %}
+      <div class="col-12">
+        <div class="text-center py-5">
+          <i class="fas fa-comments text-muted" style="font-size: 3rem;"></i>
+          <h5 class="text-muted mt-3">No posts yet</h5>
+          <p class="text-muted">Share your trading insights by creating posts.</p>
         </div>
       </div>
       {% endfor %}

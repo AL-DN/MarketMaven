@@ -3,11 +3,12 @@ from django.shortcuts import redirect, render, get_object_or_404
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
 from django.contrib.auth.models import User
+from django.contrib import messages
 
-from blog.forms import PostForm
+from blog.forms import PostForm, CommentForm
 from users.models import Position
 from users.utils import filter_positions
-from .models import Post
+from .models import Post, Comment
 
 from django.contrib.auth.decorators import login_required
 
@@ -43,6 +44,28 @@ class PostDetailView(DetailView):
     model=Post
     # context_object_name=object
     # template_name = post_detail.html
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['comments'] = self.object.comments.all()
+        context['comment_form'] = CommentForm()
+        return context
+    
+    def post(self, request, *args, **kwargs):
+        self.object = self.get_object()
+        form = CommentForm(request.POST)
+        
+        if form.is_valid():
+            comment = form.save(commit=False)
+            comment.post = self.object
+            comment.author = request.user
+            comment.save()
+            messages.success(request, 'Your comment has been posted!')
+            return redirect('post-detail', pk=self.object.pk)
+        
+        context = self.get_context_data()
+        context['comment_form'] = form
+        return self.render_to_response(context)
 
 class PostCreateView(LoginRequiredMixin, CreateView):
     model=Post

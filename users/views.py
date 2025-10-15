@@ -33,7 +33,9 @@ def register(request):
 @login_required
 def profile(request):
     context = {
-        'positions': request.user.positions.all()
+        'current_positions': request.user.profile.get_current_positions(),
+        'past_trades': request.user.profile.get_past_trades(),
+        'user_posts': request.user.profile.get_user_posts()
     }
     return render(request, 'users/profile.html', context=context)
 
@@ -129,7 +131,9 @@ def user_profile(request, username):
     context = {
         'profile_user': user,
         'is_following': is_following,
-        'positions': user.positions.all()
+        'current_positions': user.profile.get_current_positions(),
+        'past_trades': user.profile.get_past_trades(),
+        'user_posts': user.profile.get_user_posts()
     }
     return render(request, 'users/user_profile.html', context)
 

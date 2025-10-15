@@ -137,6 +137,98 @@ class Profile(models.Model):
             'winning_trades': winning_trades,
             'losing_trades': losing_trades
         }
+    
+    def get_past_trades(self, limit=10):
+        """Get past closed trades with performance metrics"""
+        return self.user.positions.filter(is_closed=True).order_by('-closed_at')[:limit]
+    
+    def get_current_positions(self):
+        """Get current open positions"""
+        return self.user.positions.filter(is_closed=False).order_by('-filled_at')
+    
+    def get_user_posts(self, limit=10):
+        """Get user's recent posts"""
+        from blog.models import Post
+        return Post.objects.filter(author=self.user).order_by('-date_posted')[:limit]
+
+    def get_badge(self):
+        """Get military-style anti-bank badge based on average returns"""
+        stats = self.get_trading_stats()
+        avg_return = stats['avg_return_pct']
+        
+        # Military-style anti-bank badge system
+        if avg_return >= 50:
+            return {
+                'name': 'Wall Street Destroyer',
+                'rank': 'General',
+                'color': 'danger',
+                'icon': 'fas fa-skull-crossbones',
+                'description': 'Annihilates the banking system'
+            }
+        elif avg_return >= 30:
+            return {
+                'name': 'Bank Breaker',
+                'rank': 'Colonel',
+                'color': 'warning',
+                'icon': 'fas fa-hammer',
+                'description': 'Smashes through financial barriers'
+            }
+        elif avg_return >= 20:
+            return {
+                'name': 'Hedge Fund Hunter',
+                'rank': 'Major',
+                'color': 'info',
+                'icon': 'fas fa-crosshairs',
+                'description': 'Targets institutional weakness'
+            }
+        elif avg_return >= 15:
+            return {
+                'name': 'Market Raider',
+                'rank': 'Captain',
+                'color': 'primary',
+                'icon': 'fas fa-shield-alt',
+                'description': 'Raids market opportunities'
+            }
+        elif avg_return >= 10:
+            return {
+                'name': 'Trading Commando',
+                'rank': 'Lieutenant',
+                'color': 'success',
+                'icon': 'fas fa-fist-raised',
+                'description': 'Elite trading operative'
+            }
+        elif avg_return >= 5:
+            return {
+                'name': 'Market Soldier',
+                'rank': 'Sergeant',
+                'color': 'secondary',
+                'icon': 'fas fa-medal',
+                'description': 'Skilled market warrior'
+            }
+        elif avg_return >= 0:
+            return {
+                'name': 'Rebel Trader',
+                'rank': 'Corporal',
+                'color': 'light',
+                'icon': 'fas fa-flag',
+                'description': 'Fighting the good fight'
+            }
+        elif avg_return >= -10:
+            return {
+                'name': 'Guerrilla Investor',
+                'rank': 'Private',
+                'color': 'dark',
+                'icon': 'fas fa-mask',
+                'description': 'Underground resistance fighter'
+            }
+        else:
+            return {
+                'name': 'Banking System Victim',
+                'rank': 'Recruit',
+                'color': 'muted',
+                'icon': 'fas fa-exclamation-triangle',
+                'description': 'Still learning the battlefield'
+            }
 
 class Position(models.Model):
     # relationships
@@ -160,11 +252,35 @@ class Position(models.Model):
     sell_date = models.DateTimeField(blank=True, null=True)
     buy_date = models.DateTimeField(blank=True, null=True)
 
+    # new fields for tracking closed positions
+    sell_price = models.FloatField(default=0.0, null=True, blank=True)
+    is_closed = models.BooleanField(default=False)
+    closed_at = models.DateTimeField(blank=True, null=True)
 
     # flags
     posted    = models.BooleanField(default=False)     # a post already exists
-    dismissed = models.BooleanField(default=False)     # user said “nah, don’t ask again”
+    dismissed = models.BooleanField(default=False)     # user said "nah, don't ask again"
 
     class Meta:
         unique_together = ("user", "position_id")         # prevents duplicates
         ordering = ("-filled_at",)
+    
+    def get_return_percentage(self):
+        """Calculate return percentage for this position"""
+        if self.is_closed and self.sell_price:
+            return ((self.sell_price - self.buy_price) / self.buy_price) * 100
+        elif self.current_price:
+            return ((self.current_price - self.buy_price) / self.buy_price) * 100
+        return 0.0
+    
+    def get_profit_loss(self):
+        """Calculate profit/loss amount"""
+        if self.is_closed and self.sell_price:
+            return (self.sell_price - self.buy_price) * self.qty
+        elif self.current_price:
+            return (self.current_price - self.buy_price) * self.qty
+        return 0.0
+    
+    def is_winning_trade(self):
+        """Check if this is a winning trade"""
+        return self.get_return_percentage() > 0

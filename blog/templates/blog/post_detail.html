@@ -14,6 +14,11 @@
             <a class="mr-2" href="{% url 'user-post' object.author.username %}">
               <i class="fas fa-user mr-1"></i>{{ object.author }}
             </a>
+            {% with badge=object.author.profile.get_badge %}
+            <span class="badge badge-{{ badge.color }} badge-sm mr-2">
+              <i class="{{ badge.icon }} mr-1"></i>{{ badge.rank }}
+            </span>
+            {% endwith %}
             <small class="text-muted">
               <i class="fas fa-clock mr-1"></i>{{ object.date_posted }}
             </small>
@@ -48,5 +53,77 @@
       </div>
     </div>
   </article>
+
+  <!-- Comments Section -->
+  <div class="mt-4">
+    <h4 class="mb-3">
+      <i class="fas fa-comments mr-2 text-info"></i>
+      Comments ({{ comments.count }})
+    </h4>
+    
+    <!-- Comment Form -->
+    {% if user.is_authenticated %}
+    <div class="card mb-4">
+      <div class="card-body">
+        <h6 class="card-title">
+          <i class="fas fa-edit mr-2"></i>Add a Comment
+        </h6>
+        <form method="post">
+          {% csrf_token %}
+          {{ comment_form.content }}
+          <div class="mt-2">
+            <button type="submit" class="btn btn-primary btn-sm">
+              <i class="fas fa-paper-plane mr-1"></i>Post Comment
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+    {% else %}
+    <div class="alert alert-info">
+      <i class="fas fa-info-circle mr-2"></i>
+      Please <a href="{% url 'login' %}">login</a> to comment on this post.
+    </div>
+    {% endif %}
+    
+    <!-- Comments List -->
+    <div class="comments-list">
+      {% for comment in comments %}
+      <div class="card mb-3">
+        <div class="card-body">
+          <div class="d-flex align-items-start">
+            <a href="{% url 'user-profile' comment.author.username %}">
+              <img class="rounded-circle mr-3" src="{{ comment.author.profile.image.url }}" 
+                   style="width: 40px; height: 40px; object-fit: cover;">
+            </a>
+            <div class="flex-grow-1">
+              <div class="d-flex justify-content-between align-items-start mb-2">
+                <div>
+                  <a href="{% url 'user-profile' comment.author.username %}" class="text-decoration-none">
+                    <strong>{{ comment.author.username }}</strong>
+                  </a>
+                  {% with badge=comment.author.profile.get_badge %}
+                  <span class="badge badge-{{ badge.color }} badge-sm ml-2">
+                    <i class="{{ badge.icon }} mr-1"></i>{{ badge.rank }}
+                  </span>
+                  {% endwith %}
+                </div>
+                <small class="text-muted">
+                  <i class="fas fa-clock mr-1"></i>{{ comment.date_posted|date:"M d, Y H:i" }}
+                </small>
+              </div>
+              <p class="mb-0">{{ comment.content }}</p>
+            </div>
+          </div>
+        </div>
+      </div>
+      {% empty %}
+      <div class="text-center py-4">
+        <i class="fas fa-comments text-muted" style="font-size: 2rem;"></i>
+        <p class="text-muted mt-2">No comments yet. Be the first to share your thoughts!</p>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
 </div>
 {% endblock content %}

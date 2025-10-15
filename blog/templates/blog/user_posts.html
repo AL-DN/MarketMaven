@@ -12,14 +12,25 @@
     <div class="media-body">
       <div class="article-metadata">
         <a class="mr-2" href="{% url 'user-post' post.author.username %}">{{ post.author }}</a>
+        {% with badge=post.author.profile.get_badge %}
+        <span class="badge badge-{{ badge.color }} badge-sm mr-2">
+          <i class="{{ badge.icon }} mr-1"></i>{{ badge.rank }}
+        </span>
+        {% endwith %}
         <small class="text-muted">{{ post.date_posted }}</small>
       </div>
       <h2>
         <a class="article-title" href="{% url 'post-detail' post.id %}"
-          >{{ post.title }}</a
+          >{{ post.symbol }}</a
         >
       </h2>
       <p class="article-content">{{ post.content }}</p>
+      <div class="mt-2">
+        <a href="{% url 'post-detail' post.id %}" class="btn btn-outline-primary btn-sm">
+          <i class="fas fa-comments mr-1"></i>{{ post.get_comment_count }} 
+          {% if post.get_comment_count == 1 %}comment{% else %}comments{% endif %}
+        </a>
+      </div>
     </div>
   </article>
   {% endfor %}

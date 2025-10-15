@@ -398,3 +398,76 @@ a.article-title:hover {
 ::-webkit-scrollbar-thumb:hover {
   background: var(--accent-gold-dark);
 }
+
+/* Trading Badge Styles */
+.badge-container {
+  position: relative;
+}
+
+.badge-container .badge {
+  font-size: 0.9rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  transition: all 0.3s ease;
+}
+
+.badge-container .badge:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+}
+
+.badge-description {
+  font-style: italic;
+  margin-top: 0.25rem;
+}
+
+/* Badge Color Variations */
+.badge-danger {
+  background: linear-gradient(135deg, #dc3545, #c82333);
+  border: 2px solid #a71e2a;
+}
+
+.badge-warning {
+  background: linear-gradient(135deg, #ffc107, #e0a800);
+  border: 2px solid #d39e00;
+  color: #212529;
+}
+
+.badge-info {
+  background: linear-gradient(135deg, #17a2b8, #138496);
+  border: 2px solid #117a8b;
+}
+
+.badge-primary {
+  background: linear-gradient(135deg, #007bff, #0056b3);
+  border: 2px solid #004085;
+}
+
+.badge-success {
+  background: linear-gradient(135deg, #28a745, #1e7e34);
+  border: 2px solid #155724;
+}
+
+.badge-secondary {
+  background: linear-gradient(135deg, #6c757d, #545b62);
+  border: 2px solid #495057;
+}
+
+.badge-light {
+  background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+  border: 2px solid #dee2e6;
+  color: #495057;
+}
+
+.badge-dark {
+  background: linear-gradient(135deg, #343a40, #23272b);
+  border: 2px solid #1d2124;
+}
+
+.badge-muted {
+  background: linear-gradient(135deg, #6c757d, #5a6268);
+  border: 2px solid #495057;
+  opacity: 0.8;
+}

@@ -34,6 +34,14 @@
               <small class="text-muted">
                 {{ trader.stats.total_positions }} trades
               </small>
+              <!-- Trading Badge -->
+              {% with badge=trader.user.profile.get_badge %}
+              <div class="mt-1">
+                <span class="badge badge-{{ badge.color }} badge-sm">
+                  <i class="{{ badge.icon }} mr-1"></i>{{ badge.rank }}
+                </span>
+              </div>
+              {% endwith %}
             </div>
           </div>
           
