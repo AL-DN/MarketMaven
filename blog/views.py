@@ -92,7 +92,58 @@ class PostCreateView(LoginRequiredMixin, CreateView):
         
         self.position.posted = True
         self.position.save()
-        return super().form_valid(form)
+        
+        response = super().form_valid(form)
+        
+        # Send email notifications to subscribers
+        self.send_email_notifications(form.instance)
+        
+        return response
+    
+    def send_email_notifications(self, post):
+        """Send email notifications to users who subscribed to this author's posts"""
+        from django.core.mail import send_mail
+        from django.template.loader import render_to_string
+        from django.conf import settings
+        
+        # Get all users who have email notifications enabled for this author
+        subscribers = self.request.user.email_subscribers.all()
+        
+        if not subscribers.exists():
+            return
+        
+        # Prepare email content
+        subject = f"New post from {self.request.user.username} on MarketMaven"
+        post_url = self.request.build_absolute_uri(post.get_absolute_url())
+        
+        for subscriber in subscribers:
+            # Create personalized message
+            message = f"""
+Hello {subscriber.username},
+
+{self.request.user.username} just posted about {post.symbol} ({post.side.upper()}).
+
+{post.content[:200]}{'...' if len(post.content) > 200 else ''}
+
+View the full post here: {post_url}
+
+---
+To manage your notification settings, visit your profile on MarketMaven.
+
+This email was sent because you enabled email notifications for {self.request.user.username}'s posts.
+            """
+            
+            try:
+                send_mail(
+                    subject,
+                    message,
+                    settings.EMAIL_HOST_USER,
+                    [subscriber.email],
+                    fail_silently=True,
+                )
+            except Exception as e:
+                # Log error but don't prevent post creation
+                print(f"Failed to send email to {subscriber.email}: {e}")
 
 
 class PostUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):

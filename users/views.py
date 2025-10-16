@@ -128,9 +128,11 @@ def unfollow_user(request, username):
 def user_profile(request, username):
     user = get_object_or_404(User, username=username)
     is_following = request.user.profile.following.filter(id=user.id).exists()
+    has_notifications = request.user.profile.has_email_notifications_for(user)
     context = {
         'profile_user': user,
         'is_following': is_following,
+        'has_notifications': has_notifications,
         'current_positions': user.profile.get_current_positions(),
         'past_trades': user.profile.get_past_trades(),
         'user_posts': user.profile.get_user_posts()
@@ -209,4 +211,31 @@ def leaderboard(request):
         'total_traders': len(leaderboard_data)
     }
     return render(request, 'users/leaderboard.html', context)
+
+@login_required
+def toggle_email_notifications(request, username):
+    """Toggle email notifications for a specific user's posts"""
+    user_to_notify = get_object_or_404(User, username=username)
+    
+    # Check if the current user follows this user
+    is_following = request.user.profile.following.filter(id=user_to_notify.id).exists()
+    
+    if not is_following:
+        messages.error(request, f'You must follow {username} before enabling email notifications.')
+        return redirect('user-profile', username=username)
+    
+    # Don't allow notifications for yourself
+    if user_to_notify == request.user:
+        messages.error(request, 'You cannot enable email notifications for yourself.')
+        return redirect('profile')
+    
+    # Toggle notifications
+    enabled = request.user.profile.toggle_email_notifications(user_to_notify)
+    
+    if enabled:
+        messages.success(request, f'Email notifications enabled for {username}\'s posts!')
+    else:
+        messages.success(request, f'Email notifications disabled for {username}\'s posts.')
+    
+    return redirect('user-profile', username=username)
     

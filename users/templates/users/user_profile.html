@@ -58,11 +58,24 @@
           </div>
         </div>
         {% if profile_user != user %}
-        <div>
+        <div class="d-flex flex-column align-items-end">
           {% if is_following %}
-            <a href="{% url 'unfollow-user' profile_user.username %}" class="btn btn-outline-danger btn-lg">
-              <i class="fas fa-user-minus mr-2"></i>Unfollow
-            </a>
+            <div class="mb-2">
+              <a href="{% url 'unfollow-user' profile_user.username %}" class="btn btn-outline-danger btn-lg">
+                <i class="fas fa-user-minus mr-2"></i>Unfollow
+              </a>
+            </div>
+            <div>
+              {% if has_notifications %}
+                <a href="{% url 'toggle-notifications' profile_user.username %}" class="btn btn-warning btn-sm" title="Email notifications enabled - click to disable">
+                  <i class="fas fa-bell mr-1"></i>Notifications ON
+                </a>
+              {% else %}
+                <a href="{% url 'toggle-notifications' profile_user.username %}" class="btn btn-outline-secondary btn-sm" title="Click to enable email notifications">
+                  <i class="far fa-bell mr-1"></i>Get Email Notifications
+                </a>
+              {% endif %}
+            </div>
           {% else %}
             <a href="{% url 'follow-user' profile_user.username %}" class="btn btn-primary btn-lg">
               <i class="fas fa-user-plus mr-2"></i>Follow

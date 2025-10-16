@@ -191,8 +191,12 @@ def filter_positions(request):
         sell.capital_gain = calculate_gain(sell.current_price, sell.buy_price, sell.qty)
         # caches when it was sold (for ytd calculations)
         sell.sell_date = timezone.now()
+        
+        # Reset posted and dismissed flags so user can post about the sell
+        sell.posted = False
+        sell.dismissed = False
 
-        sell.save(update_fields=["side", "capital_gain", "sell_date"])
+        sell.save(update_fields=["side", "capital_gain", "sell_date", "posted", "dismissed"])
 
 
 # def update_performance(request):

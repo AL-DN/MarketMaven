@@ -13,6 +13,7 @@ class Profile(models.Model):
     token_data = models.JSONField(null=True, blank=True)  # or use TextField/CharField if not JSON
     ytd_capital_gain = models.DecimalField(default=0.00,max_digits=5, decimal_places=2)
     following = models.ManyToManyField(User, related_name='followers', blank=True)
+    email_notifications = models.ManyToManyField(User, related_name='email_subscribers', blank=True)
     
     def __str__(self):
         return f'{self.user.username} Profile'
@@ -30,6 +31,19 @@ class Profile(models.Model):
     
     def get_followers_count(self):
         return self.user.followers.count()
+    
+    def has_email_notifications_for(self, user):
+        """Check if this profile has email notifications enabled for a specific user"""
+        return self.email_notifications.filter(id=user.id).exists()
+    
+    def toggle_email_notifications(self, user):
+        """Toggle email notifications for a specific user"""
+        if self.has_email_notifications_for(user):
+            self.email_notifications.remove(user)
+            return False
+        else:
+            self.email_notifications.add(user)
+            return True
     
     def get_trading_stats(self):
         """Calculate comprehensive trading statistics focused on performance ratios"""
